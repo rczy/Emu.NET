@@ -6,10 +6,10 @@ My current goal is to learn the C# language and the tools used for developing ap
 
 ## Projects
 
-- **6502 CPU:** The `CPU6502` and `CPU6502.Test` projects contains the source code and tests for 6502 CPU emulation.
+- **6502 CPU:** The `CPU.MOS6502` and `CPU.MOS6502.Test` projects contain the source code and tests for 6502 CPU emulation.
 
 ## Future plans
-- Z80 CPU
 - Atari 2600 Console
 - Nintendo Entertainment System (NES)
 - Commodore 64 (C64)
+- Z80 CPU

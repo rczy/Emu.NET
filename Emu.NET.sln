@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CPU6502", "CPU6502\CPU6502.csproj", "{D905DB99-61F6-45A4-BE3F-90F0A5523613}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CPU.MOS6502", "CPU.MOS6502\CPU.MOS6502.csproj", "{D905DB99-61F6-45A4-BE3F-90F0A5523613}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CPU6502.Tests", "CPU6502.Tests\CPU6502.Tests.csproj", "{AAD9CE0F-B11F-44AA-8089-2B608F6D2CBF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CPU.MOS6502.Tests", "CPU.MOS6502.Tests\CPU.MOS6502.Tests.csproj", "{AAD9CE0F-B11F-44AA-8089-2B608F6D2CBF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

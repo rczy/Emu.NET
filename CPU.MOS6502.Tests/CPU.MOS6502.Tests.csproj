@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CPU6502\CPU6502.csproj" />
+    <ProjectReference Include="..\CPU.MOS6502\CPU.MOS6502.csproj" />
   </ItemGroup>
 
 </Project>
