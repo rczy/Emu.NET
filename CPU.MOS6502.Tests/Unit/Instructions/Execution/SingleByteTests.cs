@@ -7,7 +7,7 @@ public class SingleByteTests
         public Implied() : base()
         {
             opCode = 0xAB;
-            AddInstruction(opCode, Internals.Instructions.SingleByte.Execution.Implied);
+            AddDummyInstruction(opCode, Internals.Instructions.SingleByte.Execution.Implied);
             LoadData([opCode]);
         }
 

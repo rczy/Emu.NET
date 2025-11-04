@@ -38,4 +38,9 @@ public class SimpleDevice(int storageSize) : Device
     {
         Array.Copy(data, _storage, data.Length);
     }
+
+    public byte PeekAt(ushort address)
+    {
+        return _storage[address];
+    }
 }

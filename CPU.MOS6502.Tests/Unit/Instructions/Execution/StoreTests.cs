@@ -2,56 +2,8 @@ using CPU.MOS6502.Internals.Instructions;
 
 namespace CPU.MOS6502.Tests.Unit.Instructions.Execution;
 
-public class InternalTests
+public class StoreTests
 {
-    public class Immediate : Base
-    {
-        public Immediate() : base()
-        {
-            opCode = 0xAB;
-            data = 0xCD;
-            AddDummyInstruction(opCode, Internals.Instructions.Internal.Execution.Immediate);
-            LoadData([opCode, data]);
-        }
-
-        [Fact]
-        public void Before_IsCorrect()
-        {
-            CheckSystem(readCount: 0, writeCount: 0, cycles: 0, pc: 0);
-
-            Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
-        }
-
-        [Fact]
-        public void T0_IsCorrect() // fetch opcode
-        {
-            Tick(1);
-            CheckSystem(readCount: 1, writeCount: 0, cycles: 1, pc: 1);
-
-            Assert.Equal(opCode, system.CPU.Decoder.OpCode);
-            Assert.False(opCalled);
-        }
-
-        [Fact]
-        public void T1_IsCorrect() // fetch data and execute operation
-        {
-            Tick(2);
-            CheckSystem(readCount: 2, writeCount: 0, cycles: 0, pc: 2);
-
-            Assert.Equal(data, system.CPU.Data);
-            Assert.True(opCalled);
-        }
-
-        [Fact]
-        public void After_IsCorrect() // next instruction
-        {
-            Tick(3);
-            CheckSystem(readCount: 3, writeCount: 0, cycles: 1, pc: 3);
-
-            Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
-        }
-    }
-
     public class ZeroPage : Base
     {
         public ZeroPage() : base()
@@ -59,8 +11,8 @@ public class InternalTests
             opCode = 0xAB;
             adl = 0x04;
             data = 0xCD;
-            AddDummyInstruction(opCode, Internals.Instructions.Internal.Execution.ZeroPage);
-            LoadData([opCode, adl, 0x00, 0x00, data]);
+            AddWriteInstruction(opCode, Internals.Instructions.Store.Execution.ZeroPage);
+            LoadData([opCode, adl]);
         }
 
         [Fact]
@@ -81,7 +33,7 @@ public class InternalTests
         }
 
         [Fact]
-        public void T1_IsCorrect() // fetch effective address
+        public void T1_IsCorrect() // fetch zero page effective address
         {
             Tick(2);
             CheckSystem(readCount: 2, writeCount: 0, cycles: 2, pc: 2);
@@ -91,13 +43,14 @@ public class InternalTests
         }
 
         [Fact]
-        public void T2_IsCorrect() // fetch data and execute operation
+        public void T2_IsCorrect() // write data to memory
         {
             Tick(3);
-            CheckSystem(readCount: 3, writeCount: 0, cycles: 0, pc: 2);
+            CheckSystem(readCount: 2, writeCount: 1, cycles: 0, pc: 2);
 
             Assert.Equal(adl, system.CPU.Address.Full);
-            Assert.Equal(data, system.CPU.Data);
+            Assert.Equal(adl, system.RAM.LastWriteAddress);
+            Assert.Equal(data, system.RAM.PeekAt(adl));
             Assert.True(opCalled);
         }
 
@@ -105,7 +58,7 @@ public class InternalTests
         public void After_IsCorrect() // next instruction
         {
             Tick(4);
-            CheckSystem(readCount: 4, writeCount: 0, cycles: 1, pc: 3);
+            CheckSystem(readCount: 3, writeCount: 1, cycles: 1, pc: 3);
 
             Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
         }
@@ -119,13 +72,12 @@ public class InternalTests
             adl = 0x23;
             adh = 0x01;
             data = 0xCD;
-            AddDummyInstruction(opCode, Internals.Instructions.Internal.Execution.Absolute);
+            AddWriteInstruction(opCode, Internals.Instructions.Store.Execution.Absolute);
 
             program = new byte[0x200];
             program[0] = opCode;
             program[1] = adl;
             program[2] = adh;
-            program[(adh << 8) | adl] = data;
 
             LoadData(program);
         }
@@ -167,13 +119,14 @@ public class InternalTests
         }
 
         [Fact]
-        public void T3_IsCorrect() // fetch data and execute operation
+        public void T3_IsCorrect() // write data to memory
         {
             Tick(4);
-            CheckSystem(readCount: 4, writeCount: 0, cycles: 0, pc: 3);
+            CheckSystem(readCount: 3, writeCount: 1, cycles: 0, pc: 3);
 
-            Assert.Equal((adh << 8) | adl, system.CPU.Address.Full);
-            Assert.Equal(data, system.CPU.Data);
+            Assert.Equal((adh << 8 ) | adl, system.CPU.Address.Full);
+            Assert.Equal(system.CPU.Address.Full, system.RAM.LastWriteAddress);
+            Assert.Equal(data, system.RAM.PeekAt(system.CPU.Address.Full));
             Assert.True(opCalled);
         }
 
@@ -181,7 +134,7 @@ public class InternalTests
         public void After_IsCorrect() // next instruction
         {
             Tick(5);
-            CheckSystem(readCount: 5, writeCount: 0, cycles: 1, pc: 4);
+            CheckSystem(readCount: 4, writeCount: 1, cycles: 1, pc: 4);
 
             Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
         }
@@ -196,7 +149,7 @@ public class InternalTests
             adl = 0x23;
             adh = 0x01;
             data = 0xCD;
-            AddDummyInstruction(opCode, Internals.Instructions.Internal.Execution.IndirectX);
+            AddWriteInstruction(opCode, Internals.Instructions.Store.Execution.IndirectX);
 
             system.CPU.Registers.X = 4;
 
@@ -206,7 +159,6 @@ public class InternalTests
             program[2] = 0x00;
             program[3] = adl;
             program[4] = adh;
-            program[(adh << 8) | adl] = data;
 
             LoadData(program);
         }
@@ -270,13 +222,14 @@ public class InternalTests
         }
 
         [Fact]
-        public void T5_IsCorrect() // fetch data and execute operation
+        public void T5_IsCorrect() // write data to memory
         {
             Tick(6);
-            CheckSystem(readCount: 6, writeCount: 0, cycles: 0, pc: 2);
+            CheckSystem(readCount: 5, writeCount: 1, cycles: 0, pc: 2);
 
             Assert.Equal((adh << 8) | adl, system.CPU.Address.Full);
-            Assert.Equal(data, system.CPU.Data);
+            Assert.Equal(system.CPU.Address.Full, system.RAM.LastWriteAddress);
+            Assert.Equal(data, system.RAM.PeekAt(system.CPU.Address.Full));
             Assert.True(opCalled);
         }
 
@@ -284,7 +237,7 @@ public class InternalTests
         public void After_IsCorrect() // next instruction
         {
             Tick(7);
-            CheckSystem(readCount: 7, writeCount: 0, cycles: 1, pc: 3);
+            CheckSystem(readCount: 6, writeCount: 1, cycles: 1, pc: 3);
 
             Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
         }
@@ -302,7 +255,7 @@ public class InternalTests
             bal = 0x23;
             bah = 0x01;
             data = 0xCD;
-            AddDummyInstruction(opCode, Steps);
+            AddWriteInstruction(opCode, Steps);
 
             program = new byte[0x300];
             program[0] = opCode;
@@ -315,8 +268,6 @@ public class InternalTests
         protected void ArrangePageCrossing(bool shouldCross)
         {
             IndexRegister = (byte)(shouldCross ? 0xFF : 0x42);
-            program[((bah << 8) | bal) + IndexRegister] = data;
-            LoadData(program);
         }
 
         [Fact]
@@ -356,56 +307,69 @@ public class InternalTests
         }
 
         [Fact]
-        public void T3_WhenPageIsNotCrossed_IsCorrect() // fetch data (no page crossing) and execute operation
+        public void T3_WhenPageIsNotCrossed_IsCorrect() // dummy read
         {
             ArrangePageCrossing(shouldCross: false);
             Tick(4);
-            CheckSystem(readCount: 4, writeCount: 0, cycles: 0, pc: 3);
+            CheckSystem(readCount: 4, writeCount: 0, cycles: 4, pc: 3);
 
-            Assert.Equal((bah << 8) | (byte)(bal + IndexRegister), system.CPU.Address.Full);
-            Assert.Equal(data, system.CPU.Data);
+            Assert.Equal((bah << 8) | (byte)(bal + IndexRegister), system.RAM.LastReadAddress);
+            Assert.False(opCalled);
+        }
+
+        [Fact]
+        public void T4_WhenPageIsNotCrossed_IsCorrect() // write data to memory
+        {
+            ArrangePageCrossing(shouldCross: false);
+            Tick(5);
+            CheckSystem(readCount: 4, writeCount: 1, cycles: 0, pc: 3);
+
+            Assert.Equal(((bah << 8) | bal) + IndexRegister, system.CPU.Address.Full);
+            Assert.Equal(system.CPU.Address.Full, system.RAM.LastWriteAddress);
+            Assert.Equal(data, system.RAM.PeekAt(system.CPU.Address.Full));
             Assert.True(opCalled);
         }
 
         [Fact]
-        public void After_PageIsNotCrossed_IsCorrect() // next instruction (no page crossing)
+        public void After_PageIsNotCrossed_IsCorrect() // next instruction
         {
             ArrangePageCrossing(shouldCross: false);
-            Tick(5);
-            CheckSystem(readCount: 5, writeCount: 0, cycles: 1, pc: 4);
+            Tick(6);
+            CheckSystem(readCount: 5, writeCount: 1, cycles: 1, pc: 4);
 
             Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
         }
 
         [Fact]
-        public void T3_WhenPageIsCrossed_IsCorrect() // fetch data (with page crossing)
+        public void T3_WhenPageIsCrossed_IsCorrect() // dummy read
         {
             ArrangePageCrossing(shouldCross: true);
             Tick(4);
             CheckSystem(readCount: 4, writeCount: 0, cycles: 4, pc: 3);
 
-            Assert.Equal((bah << 8) | (byte)(bal + IndexRegister), system.RAM.LastReadAddress); // ignored data fetch
+            Assert.Equal((bah << 8) | (byte)(bal + IndexRegister), system.RAM.LastReadAddress);
             Assert.False(opCalled);
         }
 
         [Fact]
-        public void T4_WhenPageIsCrossed_IsCorrect() // fetch data (with page crossing) and execute operation
+        public void T4_WhenPageIsCrossed_IsCorrect() // write data to memory
         {
             ArrangePageCrossing(shouldCross: true);
             Tick(5);
-            CheckSystem(readCount: 5, writeCount: 0, cycles: 0, pc: 3);
+            CheckSystem(readCount: 4, writeCount: 1, cycles: 0, pc: 3);
 
             Assert.Equal(((bah << 8) | bal) + IndexRegister, system.CPU.Address.Full);
-            Assert.Equal(data, system.CPU.Data);
+            Assert.Equal(system.CPU.Address.Full, system.RAM.LastWriteAddress);
+            Assert.Equal(data, system.RAM.PeekAt(system.CPU.Address.Full));
             Assert.True(opCalled);
         }
 
         [Fact]
-        public void After_PageIsCrossed_IsCorrect() // next instruction (with page crossing)
+        public void After_PageIsCrossed_IsCorrect() // next instruction
         {
             ArrangePageCrossing(shouldCross: true);
             Tick(6);
-            CheckSystem(readCount: 6, writeCount: 0, cycles: 1, pc: 4);
+            CheckSystem(readCount: 5, writeCount: 1, cycles: 1, pc: 4);
 
             Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
         }
@@ -419,7 +383,7 @@ public class InternalTests
             set => system.CPU.Registers.X = value;
         }
 
-        protected override Steps Steps => Internals.Instructions.Internal.Execution.AbsoluteX;
+        protected override Steps Steps => Internals.Instructions.Store.Execution.AbsoluteX;
     }
 
     public class AbsoluteY : AbsoluteIndexed
@@ -430,7 +394,7 @@ public class InternalTests
             set => system.CPU.Registers.Y = value;
         }
 
-        protected override Steps Steps => Internals.Instructions.Internal.Execution.AbsoluteY;
+        protected override Steps Steps => Internals.Instructions.Store.Execution.AbsoluteY;
     }
 
     abstract public class ZeroPageIndexed : Base
@@ -444,7 +408,7 @@ public class InternalTests
             opCode = 0xAB;
             bal = 0x23;
             data = 0xCD;
-            AddDummyInstruction(opCode, Steps);
+            AddWriteInstruction(opCode, Steps);
 
             program = new byte[0x200];
             program[0] = opCode;
@@ -456,8 +420,6 @@ public class InternalTests
         protected void ArrangeWrapAround(bool shouldWrap)
         {
             IndexRegister = (byte)(shouldWrap ? 0xFF : 0x42);
-            program[(byte)(bal + IndexRegister)] = data;
-            LoadData(program);
         }
 
         [Fact]
@@ -497,26 +459,28 @@ public class InternalTests
         }
 
         [Fact]
-        public void T3_WhenNotWrapAround_IsCorrect() // fetch data and execute operation (no wrap around)
+        public void T3_WhenNotWrapAround_IsCorrect() // write data to memory (no wrap around)
         {
             ArrangeWrapAround(shouldWrap: false);
             Tick(4);
-            CheckSystem(readCount: 4, writeCount: 0, cycles: 0, pc: 2);
+            CheckSystem(readCount: 3, writeCount: 1, cycles: 0, pc: 2);
 
             Assert.Equal((byte)(bal + IndexRegister), system.CPU.Address.Full);
-            Assert.Equal(data, system.CPU.Data);
+            Assert.Equal(system.CPU.Address.Full, system.RAM.LastWriteAddress);
+            Assert.Equal(data, system.RAM.PeekAt(system.CPU.Address.Full));
             Assert.True(opCalled);
         }
 
         [Fact]
-        public void T3_WhenWrapAround_IsCorrect() // fetch data and execute operation (with wrap around)
+        public void T3_WhenWrapAround_IsCorrect() // write data to memory (with wrap around)
         {
             ArrangeWrapAround(shouldWrap: true);
             Tick(4);
-            CheckSystem(readCount: 4, writeCount: 0, cycles: 0, pc: 2);
+            CheckSystem(readCount: 3, writeCount: 1, cycles: 0, pc: 2);
 
             Assert.Equal((byte)(bal + IndexRegister), system.CPU.Address.Full);
-            Assert.Equal(data, system.CPU.Data);
+            Assert.Equal(system.CPU.Address.Full, system.RAM.LastWriteAddress);
+            Assert.Equal(data, system.RAM.PeekAt(system.CPU.Address.Full));
             Assert.True(opCalled);
         }
 
@@ -524,7 +488,7 @@ public class InternalTests
         public void After_IsCorrect() // next instruction
         {
             Tick(5);
-            CheckSystem(readCount: 5, writeCount: 0, cycles: 1, pc: 3);
+            CheckSystem(readCount: 4, writeCount: 1, cycles: 1, pc: 3);
 
             Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
         }
@@ -538,7 +502,7 @@ public class InternalTests
             set => system.CPU.Registers.X = value;
         }
 
-        protected override Steps Steps => Internals.Instructions.Internal.Execution.ZeroPageX;
+        protected override Steps Steps => Internals.Instructions.Store.Execution.ZeroPageX;
     }
 
     public class ZeroPageY : ZeroPageIndexed
@@ -549,7 +513,7 @@ public class InternalTests
             set => system.CPU.Registers.Y = value;
         }
 
-        protected override Steps Steps => Internals.Instructions.Internal.Execution.ZeroPageY;
+        protected override Steps Steps => Internals.Instructions.Store.Execution.ZeroPageY;
     }
 
     public class IndirectY : Base
@@ -561,7 +525,7 @@ public class InternalTests
             bal = 0x23;
             bah = 0x01;
             data = 0xCD;
-            AddDummyInstruction(opCode, Internals.Instructions.Internal.Execution.IndirectY);
+            AddWriteInstruction(opCode, Internals.Instructions.Store.Execution.IndirectY);
 
             program = new byte[0x300];
             program[0] = opCode;
@@ -622,18 +586,29 @@ public class InternalTests
             CheckSystem(readCount: 4, writeCount: 0, cycles: 4, pc: 2);
 
             Assert.Equal(bah, system.CPU.BaseAddress.High);
+        }
+
+        [Fact]
+        public void T4_WhenPageIsNotCrossed_IsCorrect() // dummy read (no page crossing)
+        {
+            ArrangePageCrossing(shouldCross: false);
+            Tick(5);
+            CheckSystem(readCount: 5, writeCount: 0, cycles: 5, pc: 2);
+
+            Assert.Equal((bah << 8) | (byte)(bal + system.CPU.Registers.Y), system.RAM.LastReadAddress);
             Assert.False(opCalled);
         }
 
         [Fact]
-        public void T4_WhenPageIsNotCrossed_IsCorrect() // fetch data (no page crossing) and execute operation
+        public void T5_WhenPageIsNotCrossed_IsCorrect() // write data to memory (no page crossing)
         {
             ArrangePageCrossing(shouldCross: false);
-            Tick(5);
-            CheckSystem(readCount: 5, writeCount: 0, cycles: 0, pc: 2);
+            Tick(6);
+            CheckSystem(readCount: 5, writeCount: 1, cycles: 0, pc: 2);
 
-            Assert.Equal((bah << 8) | (byte)(bal + system.CPU.Registers.Y), system.CPU.Address.Full);
-            Assert.Equal(data, system.CPU.Data);
+            Assert.Equal(((bah << 8) | bal) + system.CPU.Registers.Y, system.CPU.Address.Full);
+            Assert.Equal(system.CPU.Address.Full, system.RAM.LastWriteAddress);
+            Assert.Equal(data, system.RAM.PeekAt(system.CPU.Address.Full));
             Assert.True(opCalled);
         }
 
@@ -641,33 +616,33 @@ public class InternalTests
         public void After_PageIsNotCrossed_IsCorrect() // next instruction (no page crossing)
         {
             ArrangePageCrossing(shouldCross: false);
-            Tick(6);
-            CheckSystem(readCount: 6, writeCount: 0, cycles: 1, pc: 3);
+            Tick(7);
+            CheckSystem(readCount: 6, writeCount: 1, cycles: 1, pc: 3);
 
             Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
         }
 
         [Fact]
-        public void T4_WhenPageIsCrossed_IsCorrect() // fetch data (with page crossing), ignored
+        public void T4_WhenPageIsCrossed_IsCorrect() // dummy read (with page crossing)
         {
             ArrangePageCrossing(shouldCross: true);
             Tick(5);
             CheckSystem(readCount: 5, writeCount: 0, cycles: 5, pc: 2);
 
-            Assert.Equal((bah << 8) | (byte)(bal + system.CPU.Registers.Y), system.CPU.Address.Full);
-            Assert.Equal(system.CPU.Address.Full, system.RAM.LastReadAddress);
+            Assert.Equal((bah << 8) | (byte)(bal + system.CPU.Registers.Y), system.RAM.LastReadAddress);
             Assert.False(opCalled);
         }
 
         [Fact]
-        public void T5_WhenPageIsCrossed_IsCorrect() // fetch data (with page crossing) and execute operation
+        public void T5_WhenPageIsCrossed_IsCorrect() // write data to memory (with page crossing)
         {
             ArrangePageCrossing(shouldCross: true);
             Tick(6);
-            CheckSystem(readCount: 6, writeCount: 0, cycles: 0, pc: 2);
+            CheckSystem(readCount: 5, writeCount: 1, cycles: 0, pc: 2);
 
             Assert.Equal(((bah << 8) | bal) + system.CPU.Registers.Y, system.CPU.Address.Full);
-            Assert.Equal(data, system.CPU.Data);
+            Assert.Equal(system.CPU.Address.Full, system.RAM.LastWriteAddress);
+            Assert.Equal(data, system.RAM.PeekAt(system.CPU.Address.Full));
             Assert.True(opCalled);
         }
 
@@ -676,7 +651,7 @@ public class InternalTests
         {
             ArrangePageCrossing(shouldCross: true);
             Tick(7);
-            CheckSystem(readCount: 7, writeCount: 0, cycles: 1, pc: 3);
+            CheckSystem(readCount: 6, writeCount: 1, cycles: 1, pc: 3);
 
             Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
         }

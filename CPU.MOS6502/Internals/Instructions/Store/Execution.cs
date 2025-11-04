@@ -1,14 +1,7 @@
-namespace CPU.MOS6502.Internals.Instructions.Internal;
+namespace CPU.MOS6502.Internals.Instructions.Store;
 
 static class Execution
 {
-    public static bool Immediate(Core cpu, Operation op) // 2 cycles
-    {
-        cpu.Data = cpu.Bus.Read(cpu.Registers.PC++);
-        op(cpu);
-        return true;
-    }
-
     public static bool ZeroPage(Core cpu, Operation op) // 3 cycles
     {
         switch (cpu.Cycles)
@@ -18,7 +11,6 @@ static class Execution
                 return false;
             case 2:
                 cpu.Address.High = 0x00;
-                cpu.Data = cpu.Bus.Read(cpu.Address);
                 break;
         }
         op(cpu);
@@ -36,7 +28,6 @@ static class Execution
                 cpu.Address.High = cpu.Bus.Read(cpu.Registers.PC++);
                 return false;
             case 3:
-                cpu.Data = cpu.Bus.Read(cpu.Address);
                 break;
         }
         op(cpu);
@@ -61,14 +52,13 @@ static class Execution
                 cpu.Address.High = cpu.Bus.Read((byte)(cpu.BaseAddress + cpu.Registers.X + 1));
                 return false;
             case 5:
-                cpu.Data = cpu.Bus.Read(cpu.Address);
                 break;
         }
         op(cpu);
         return true;
     }
 
-    private static bool AbsoluteIndexed(Core cpu, Operation op, byte register) // 4 or 5 cycles
+    private static bool AbsoluteIndexed(Core cpu, Operation op, byte register) // 5 cycles
     {
         switch (cpu.Cycles)
         {
@@ -85,12 +75,10 @@ static class Execution
                 cpu.Data = cpu.Bus.Read(cpu.Address);
                 if (adl > 0xFF) // page boundary crossed
                 {
-                    return false;
+                    cpu.Address.High++;
                 }
-                break;
+                return false;
             case 4:
-                cpu.Address.High++;
-                cpu.Data = cpu.Bus.Read(cpu.Address);
                 break;
         }
         op(cpu);
@@ -121,7 +109,6 @@ static class Execution
             case 3:
                 cpu.BaseAddress.Low += register;
                 cpu.Address.Full = cpu.BaseAddress.Full;
-                cpu.Data = cpu.Bus.Read(cpu.Address);
                 break;
         }
         op(cpu);
@@ -138,7 +125,7 @@ static class Execution
         return ZeroPageIndexed(cpu, op, cpu.Registers.Y);
     }
 
-    public static bool IndirectY(Core cpu, Operation op) // 5 or 6 cycles
+    public static bool IndirectY(Core cpu, Operation op) // 6 cycles
     {
         switch (cpu.Cycles)
         {
@@ -160,12 +147,10 @@ static class Execution
                 cpu.Data = cpu.Bus.Read(cpu.Address);
                 if (adl > 0xFF) // page boundary crossed
                 {
-                    return false;
+                    cpu.Address.High++;
                 }
-                break;
+                return false;
             case 5:
-                cpu.Address.High++;
-                cpu.Data = cpu.Bus.Read(cpu.Address);
                 break;
         }
         op(cpu);

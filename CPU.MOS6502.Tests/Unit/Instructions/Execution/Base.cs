@@ -19,16 +19,33 @@ public class Base
     protected byte[] program = [];
 
     protected bool opCalled; // operation is executed
+    protected int ticks;
 
     protected Base()
     {
         system = new SimpleSystem();
         opCalled = false;
+        ticks = 0;
     }
 
-    protected void AddInstruction(byte opCode, Steps steps)
+    protected void AddDummyInstruction(byte opCode, Steps steps)
     {
-        system.CPU.Decoder.AddInstruction(opCode, "TEST", "test addressing", cpu => opCalled = true, steps);
+        AddInstruction(opCode, cpu => opCalled = true, steps);
+    }
+
+    protected void AddWriteInstruction(byte opCode, Steps steps)
+    {
+        void write(Core cpu)
+        {
+            cpu.Bus.Write(cpu.Address, data);
+            opCalled = true;
+        }
+        AddInstruction(opCode, write, steps);
+    }
+
+    protected void AddInstruction(byte opCode, Operation op, Steps steps)
+    {
+        system.CPU.Decoder.AddInstruction(opCode, "TEST", "test addressing", op, steps);
     }
 
     protected void LoadData(byte[] data)
@@ -38,6 +55,7 @@ public class Base
 
     protected void Tick(int cycles)
     {
+        ticks = cycles;
         for (int i = 0; i < cycles; i++)
             system.CPU.Tick();
     }
@@ -48,5 +66,6 @@ public class Base
         Assert.Equal(writeCount, system.RAM.WriteCount);
         Assert.Equal(cycles, system.CPU.Cycles);
         Assert.Equal(pc, system.CPU.Registers.PC);
+        Assert.Equal(ticks, readCount + writeCount);
     }
 }
