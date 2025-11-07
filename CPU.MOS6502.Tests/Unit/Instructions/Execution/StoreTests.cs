@@ -306,10 +306,12 @@ public class StoreTests
             Assert.False(opCalled);
         }
 
-        [Fact]
-        public void T3_WhenPageIsNotCrossed_IsCorrect() // dummy read
+        [Theory]
+        [InlineData(true)] // page is crossed
+        [InlineData(false)] // page is not crossed
+        public void T3_IsCorrect(bool shouldCross) // dummy read
         {
-            ArrangePageCrossing(shouldCross: false);
+            ArrangePageCrossing(shouldCross);
             Tick(4);
             CheckSystem(readCount: 4, writeCount: 0, cycles: 4, pc: 3);
 
@@ -317,10 +319,12 @@ public class StoreTests
             Assert.False(opCalled);
         }
 
-        [Fact]
-        public void T4_WhenPageIsNotCrossed_IsCorrect() // write data to memory
+        [Theory]
+        [InlineData(true)] // page is crossed
+        [InlineData(false)] // page is not crossed
+        public void T4_IsCorrect(bool shouldCross) // write data to memory
         {
-            ArrangePageCrossing(shouldCross: false);
+            ArrangePageCrossing(shouldCross);
             Tick(5);
             CheckSystem(readCount: 4, writeCount: 1, cycles: 0, pc: 3);
 
@@ -330,44 +334,12 @@ public class StoreTests
             Assert.True(opCalled);
         }
 
-        [Fact]
-        public void After_PageIsNotCrossed_IsCorrect() // next instruction
+        [Theory]
+        [InlineData(true)] // page is crossed
+        [InlineData(false)] // page is not crossed
+        public void After_IsCorrect(bool shouldCross) // next instruction
         {
-            ArrangePageCrossing(shouldCross: false);
-            Tick(6);
-            CheckSystem(readCount: 5, writeCount: 1, cycles: 1, pc: 4);
-
-            Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
-        }
-
-        [Fact]
-        public void T3_WhenPageIsCrossed_IsCorrect() // dummy read
-        {
-            ArrangePageCrossing(shouldCross: true);
-            Tick(4);
-            CheckSystem(readCount: 4, writeCount: 0, cycles: 4, pc: 3);
-
-            Assert.Equal((bah << 8) | (byte)(bal + IndexRegister), system.RAM.LastReadAddress);
-            Assert.False(opCalled);
-        }
-
-        [Fact]
-        public void T4_WhenPageIsCrossed_IsCorrect() // write data to memory
-        {
-            ArrangePageCrossing(shouldCross: true);
-            Tick(5);
-            CheckSystem(readCount: 4, writeCount: 1, cycles: 0, pc: 3);
-
-            Assert.Equal(((bah << 8) | bal) + IndexRegister, system.CPU.Address.Full);
-            Assert.Equal(system.CPU.Address.Full, system.RAM.LastWriteAddress);
-            Assert.Equal(data, system.RAM.PeekAt(system.CPU.Address.Full));
-            Assert.True(opCalled);
-        }
-
-        [Fact]
-        public void After_PageIsCrossed_IsCorrect() // next instruction
-        {
-            ArrangePageCrossing(shouldCross: true);
+            ArrangePageCrossing(shouldCross);
             Tick(6);
             CheckSystem(readCount: 5, writeCount: 1, cycles: 1, pc: 4);
 
@@ -458,23 +430,12 @@ public class StoreTests
             Assert.False(opCalled);
         }
 
-        [Fact]
-        public void T3_WhenNotWrapAround_IsCorrect() // write data to memory (no wrap around)
+        [Theory]
+        [InlineData(true)] // wrap around
+        [InlineData(false)] // no wrap around
+        public void T3_IsCorrect(bool shouldWrap) // write data to memory
         {
-            ArrangeWrapAround(shouldWrap: false);
-            Tick(4);
-            CheckSystem(readCount: 3, writeCount: 1, cycles: 0, pc: 2);
-
-            Assert.Equal((byte)(bal + IndexRegister), system.CPU.Address.Full);
-            Assert.Equal(system.CPU.Address.Full, system.RAM.LastWriteAddress);
-            Assert.Equal(data, system.RAM.PeekAt(system.CPU.Address.Full));
-            Assert.True(opCalled);
-        }
-
-        [Fact]
-        public void T3_WhenWrapAround_IsCorrect() // write data to memory (with wrap around)
-        {
-            ArrangeWrapAround(shouldWrap: true);
+            ArrangeWrapAround(shouldWrap);
             Tick(4);
             CheckSystem(readCount: 3, writeCount: 1, cycles: 0, pc: 2);
 
@@ -588,10 +549,12 @@ public class StoreTests
             Assert.Equal(bah, system.CPU.BaseAddress.High);
         }
 
-        [Fact]
-        public void T4_WhenPageIsNotCrossed_IsCorrect() // dummy read (no page crossing)
+        [Theory]
+        [InlineData(true)] // page is crossed
+        [InlineData(false)] // page is not crossed
+        public void T4_IsCorrect(bool shouldCross) // dummy read
         {
-            ArrangePageCrossing(shouldCross: false);
+            ArrangePageCrossing(shouldCross);
             Tick(5);
             CheckSystem(readCount: 5, writeCount: 0, cycles: 5, pc: 2);
 
@@ -599,10 +562,12 @@ public class StoreTests
             Assert.False(opCalled);
         }
 
-        [Fact]
-        public void T5_WhenPageIsNotCrossed_IsCorrect() // write data to memory (no page crossing)
+        [Theory]
+        [InlineData(true)] // page is crossed
+        [InlineData(false)] // page is not crossed
+        public void T5_IsCorrect(bool shouldCross) // write data to memory
         {
-            ArrangePageCrossing(shouldCross: false);
+            ArrangePageCrossing(shouldCross);
             Tick(6);
             CheckSystem(readCount: 5, writeCount: 1, cycles: 0, pc: 2);
 
@@ -612,44 +577,12 @@ public class StoreTests
             Assert.True(opCalled);
         }
 
-        [Fact]
-        public void After_PageIsNotCrossed_IsCorrect() // next instruction (no page crossing)
+        [Theory]
+        [InlineData(true)] // page is crossed
+        [InlineData(false)] // page is not crossed
+        public void After_IsCorrect(bool shouldCross) // next instruction
         {
-            ArrangePageCrossing(shouldCross: false);
-            Tick(7);
-            CheckSystem(readCount: 6, writeCount: 1, cycles: 1, pc: 3);
-
-            Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
-        }
-
-        [Fact]
-        public void T4_WhenPageIsCrossed_IsCorrect() // dummy read (with page crossing)
-        {
-            ArrangePageCrossing(shouldCross: true);
-            Tick(5);
-            CheckSystem(readCount: 5, writeCount: 0, cycles: 5, pc: 2);
-
-            Assert.Equal((bah << 8) | (byte)(bal + system.CPU.Registers.Y), system.RAM.LastReadAddress);
-            Assert.False(opCalled);
-        }
-
-        [Fact]
-        public void T5_WhenPageIsCrossed_IsCorrect() // write data to memory (with page crossing)
-        {
-            ArrangePageCrossing(shouldCross: true);
-            Tick(6);
-            CheckSystem(readCount: 5, writeCount: 1, cycles: 0, pc: 2);
-
-            Assert.Equal(((bah << 8) | bal) + system.CPU.Registers.Y, system.CPU.Address.Full);
-            Assert.Equal(system.CPU.Address.Full, system.RAM.LastWriteAddress);
-            Assert.Equal(data, system.RAM.PeekAt(system.CPU.Address.Full));
-            Assert.True(opCalled);
-        }
-
-        [Fact]
-        public void After_PageIsCrossed_IsCorrect() // next instruction (with page crossing)
-        {
-            ArrangePageCrossing(shouldCross: true);
+            ArrangePageCrossing(shouldCross);
             Tick(7);
             CheckSystem(readCount: 6, writeCount: 1, cycles: 1, pc: 3);
 

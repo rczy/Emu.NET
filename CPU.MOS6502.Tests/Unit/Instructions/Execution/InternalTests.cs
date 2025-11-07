@@ -496,22 +496,12 @@ public class InternalTests
             Assert.False(opCalled);
         }
 
-        [Fact]
-        public void T3_WhenNotWrapAround_IsCorrect() // fetch data and execute operation (no wrap around)
+        [Theory]
+        [InlineData(true)] // wrap around
+        [InlineData(false)] // no wrap around
+        public void T3_IsCorrect(bool shouldWrap) // fetch data and execute operation
         {
-            ArrangeWrapAround(shouldWrap: false);
-            Tick(4);
-            CheckSystem(readCount: 4, writeCount: 0, cycles: 0, pc: 2);
-
-            Assert.Equal((byte)(bal + IndexRegister), system.CPU.Address.Full);
-            Assert.Equal(data, system.CPU.Data);
-            Assert.True(opCalled);
-        }
-
-        [Fact]
-        public void T3_WhenWrapAround_IsCorrect() // fetch data and execute operation (with wrap around)
-        {
-            ArrangeWrapAround(shouldWrap: true);
+            ArrangeWrapAround(shouldWrap);
             Tick(4);
             CheckSystem(readCount: 4, writeCount: 0, cycles: 0, pc: 2);
 
