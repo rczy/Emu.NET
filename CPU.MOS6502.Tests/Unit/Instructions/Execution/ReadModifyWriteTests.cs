@@ -1,8 +1,6 @@
-using CPU.MOS6502.Internals.Instructions;
-
 namespace CPU.MOS6502.Tests.Unit.Instructions.Execution;
 
-public class ReadModifyWrite
+public class ReadModifyWriteTests
 {
     public class ZeroPage : Base
     {

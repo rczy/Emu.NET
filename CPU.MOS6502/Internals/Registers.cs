@@ -6,7 +6,7 @@ public class Registers
     public byte A { get; internal set; } // accumulator
     public byte X { get; internal set; } // X register
     public byte Y { get; internal set; } // Y register
-    public byte S { get; internal set; } // stack pointer
+    public byte SP { get; internal set; } // stack pointer
     private StatusFlags P; // processor status register
 
     [Flags]
