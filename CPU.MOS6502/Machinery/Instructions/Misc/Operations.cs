@@ -6,4 +6,14 @@ static class Operations
     {
         cpu.Registers.PC = cpu.Address;
     }
+
+    public static void RTS(Core cpu)
+    {
+        cpu.Registers.PC++;
+    }
+
+    public static void JMP(Core cpu)
+    {
+        cpu.Registers.PC = cpu.Address;
+    }
 }

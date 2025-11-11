@@ -268,4 +268,241 @@ public class MiscTests
             Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
         }
     }
+
+    public class ReturnFromSubroutine : Base
+    {
+        public ReturnFromSubroutine() : base()
+        {
+            system.CPU.Registers.SP = 0xFD;
+            system.CPU.Registers.PC = 0x02CD;
+
+            opCode = 0xAB;
+            adh = 0x01; // PC high
+            adl = 0x02; // PC low
+            AddInstruction(opCode, Operations.RTS, ExecSteps.ReturnFromSubroutine);
+
+            program = new byte[0x300];
+            program[0x02CD] = opCode;
+            program[0x01FE] = adl;
+            program[0x01FF] = adh;
+            LoadData(program);
+        }
+
+        [Fact]
+        public void Before_IsCorrect()
+        {
+            CheckSystem(readCount: 0, writeCount: 0, cycles: 0, pc: 0x02CD);
+
+            Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
+        }
+
+        [Fact]
+        public void T0_IsCorrect() // fetch opcode
+        {
+            Tick(1);
+            CheckSystem(readCount: 1, writeCount: 0, cycles: 1, pc: 0x02CE);
+
+            Assert.Equal(opCode, system.CPU.Decoder.OpCode);
+        }
+
+        [Fact]
+        public void T1_IsCorrect() // dummy read
+        {
+            Tick(2);
+            CheckSystem(readCount: 2, writeCount: 0, cycles: 2, pc: 0x02CE);
+
+            Assert.Equal(system.CPU.Registers.PC, system.RAM.LastReadAddress);
+        }
+
+        [Fact]
+        public void T2_IsCorrect() // fetch data from stack (discarded)
+        {
+            Tick(3);
+            CheckSystem(readCount: 3, writeCount: 0, cycles: 3, pc: 0x02CE);
+
+            Assert.Equal(0x01FD, system.RAM.LastReadAddress);
+        }
+
+        [Fact]
+        public void T3_IsCorrect() // pull PCL from stack
+        {
+            Tick(4);
+            CheckSystem(readCount: 4, writeCount: 0, cycles: 4, pc: 0x0202);
+
+            Assert.Equal(0x01FE, system.RAM.LastReadAddress);
+            Assert.Equal(0xFE, system.CPU.Registers.SP);
+        }
+
+        [Fact]
+        public void T4_IsCorrect() // pull PCH from stack
+        {
+            Tick(5);
+            CheckSystem(readCount: 5, writeCount: 0, cycles: 5, pc: 0x0102);
+
+            Assert.Equal(0x01FF, system.RAM.LastReadAddress);
+            Assert.Equal(0xFF, system.CPU.Registers.SP);
+        }
+
+        [Fact]
+        public void T5_IsCorrect() // dummy read and increment PC
+        {
+            Tick(6);
+            CheckSystem(readCount: 6, writeCount: 0, cycles: 0, pc: 0x0103);
+
+            Assert.Equal(0x0102, system.RAM.LastReadAddress);
+        }
+
+        [Fact]
+        public void After_IsCorrect() // next instruction
+        {
+            Tick(7);
+            CheckSystem(readCount: 7, writeCount: 0, cycles: 1, pc: 0x0104);
+
+            Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
+        }
+    }
+
+    public class JumpAbsolute : Base
+    {
+        public JumpAbsolute() : base()
+        {
+            opCode = 0xAB;
+            adh = 0x01;
+            adl = 0x02;
+            AddInstruction(opCode, Operations.JMP, ExecSteps.JumpAbsolute);
+
+            program = new byte[0x200];
+            program[0] = opCode;
+            program[1] = adl;
+            program[2] = adh;
+            LoadData(program);
+        }
+
+        [Fact]
+        public void Before_IsCorrect()
+        {
+            CheckSystem(readCount: 0, writeCount: 0, cycles: 0, pc: 0);
+
+            Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
+        }
+
+        [Fact]
+        public void T0_IsCorrect() // fetch opcode
+        {
+            Tick(1);
+            CheckSystem(readCount: 1, writeCount: 0, cycles: 1, pc: 1);
+
+            Assert.Equal(opCode, system.CPU.Decoder.OpCode);
+        }
+
+        [Fact]
+        public void T1_IsCorrect() // fetch low order byte of jump address
+        {
+            Tick(2);
+            CheckSystem(readCount: 2, writeCount: 0, cycles: 2, pc: 2);
+
+            Assert.Equal(adl, system.CPU.Address.Low);
+        }
+
+        [Fact]
+        public void T2_IsCorrect() // fetch high order byte of jump address
+        {
+            Tick(3);
+            CheckSystem(readCount: 3, writeCount: 0, cycles: 0, pc: 0x0102);
+
+            Assert.Equal(adh, system.CPU.Address.High);
+        }
+
+        [Fact]
+        public void After_IsCorrect() // next instruction
+        {
+            Tick(4);
+            CheckSystem(readCount: 4, writeCount: 0, cycles: 1, pc: 0x0103);
+
+            Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
+        }
+    }
+
+    public class JumpImplied : Base
+    {
+        public JumpImplied() : base()
+        {
+            opCode = 0xAB;
+            iah = 0x01;
+            ial = 0x02;
+            adh = 0x02;
+            adl = 0xCD;
+            AddInstruction(opCode, Operations.JMP, ExecSteps.JumpImplied);
+
+            program = new byte[0x300];
+            program[0] = opCode;
+            program[1] = ial;
+            program[2] = iah;
+            program[(iah << 8) | ial] = adl;
+            program[((iah << 8) | ial) + 1] = adh;
+            LoadData(program);
+        }
+
+        [Fact]
+        public void Before_IsCorrect()
+        {
+            CheckSystem(readCount: 0, writeCount: 0, cycles: 0, pc: 0);
+
+            Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
+        }
+
+        [Fact]
+        public void T0_IsCorrect() // fetch opcode
+        {
+            Tick(1);
+            CheckSystem(readCount: 1, writeCount: 0, cycles: 1, pc: 1);
+
+            Assert.Equal(opCode, system.CPU.Decoder.OpCode);
+        }
+
+        [Fact]
+        public void T1_IsCorrect() // fetch low order byte of indirect address
+        {
+            Tick(2);
+            CheckSystem(readCount: 2, writeCount: 0, cycles: 2, pc: 2);
+
+            Assert.Equal(ial, system.CPU.IndirectAddress.Low);
+        }
+
+        [Fact]
+        public void T2_IsCorrect() // fetch high order byte of indirect address
+        {
+            Tick(3);
+            CheckSystem(readCount: 3, writeCount: 0, cycles: 3, pc: 2);
+
+            Assert.Equal(iah, system.CPU.IndirectAddress.High);
+        }
+
+        [Fact]
+        public void T3_IsCorrect() // fetch low order byte of jump address
+        {
+            Tick(4);
+            CheckSystem(readCount: 4, writeCount: 0, cycles: 4, pc: 2);
+
+            Assert.Equal(adl, system.CPU.Address.Low);
+        }
+
+        [Fact]
+        public void T4_IsCorrect() // fetch high order byte of jump address
+        {
+            Tick(5);
+            CheckSystem(readCount: 5, writeCount: 0, cycles: 0, pc: 0x02CD);
+
+            Assert.Equal(adh, system.CPU.Address.High);
+        }
+
+        [Fact]
+        public void After_IsCorrect() // next instruction
+        {
+            Tick(6);
+            CheckSystem(readCount: 6, writeCount: 0, cycles: 1, pc: 0x02CE);
+
+            Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
+        }
+    }
 }

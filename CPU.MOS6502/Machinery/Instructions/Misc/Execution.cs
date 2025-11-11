@@ -62,4 +62,67 @@ static class Execution
         op(cpu);
         return true;
     }
+
+    public static bool ReturnFromSubroutine(Core cpu, Operation op) // 6 cycles
+    {
+        switch (cpu.Cycles)
+        {
+            case 1:
+                cpu.Data = cpu.Bus.Read(cpu.Registers.PC); // dummy read
+                return false;
+            case 2:
+                cpu.Data = cpu.Bus.Read((ushort)(0x0100 | cpu.Registers.SP)); // dummy read
+                return false;
+            case 3:
+                cpu.Registers.PC &= 0xFF00;
+                cpu.Registers.PC |= cpu.Bus.Read((ushort)(0x0100 | ++cpu.Registers.SP));
+                return false;
+            case 4:
+                cpu.Registers.PC &= 0x00FF;
+                byte PCH = cpu.Data = cpu.Bus.Read((ushort)(0x0100 | ++cpu.Registers.SP));
+                cpu.Registers.PC |= (ushort)(PCH << 8);
+                return false;
+            case 5:
+                cpu.Data = cpu.Bus.Read(cpu.Registers.PC); // dummy read
+                break;
+        }
+        op(cpu);
+        return true;
+    }
+
+    public static bool JumpAbsolute(Core cpu, Operation op) // 3 cycles
+    {
+        switch (cpu.Cycles)
+        {
+            case 1:
+                cpu.Address.Low = cpu.Bus.Read(cpu.Registers.PC++);
+                return false;
+            case 2:
+                cpu.Address.High = cpu.Bus.Read(cpu.Registers.PC);
+                break;
+        }
+        op(cpu);
+        return true;
+    }
+
+    public static bool JumpImplied(Core cpu, Operation op) // 5 cycles
+    {
+        switch (cpu.Cycles)
+        {
+            case 1:
+                cpu.IndirectAddress.Low = cpu.Bus.Read(cpu.Registers.PC++);
+                return false;
+            case 2:
+                cpu.IndirectAddress.High = cpu.Bus.Read(cpu.Registers.PC);
+                return false;
+            case 3:
+                cpu.Address.Low = cpu.Bus.Read(cpu.IndirectAddress);
+                return false;
+            case 4:
+                cpu.Address.High = cpu.Bus.Read((ushort)(cpu.IndirectAddress + 1));
+                break;
+        }
+        op(cpu);
+        return true;
+    }
 }
