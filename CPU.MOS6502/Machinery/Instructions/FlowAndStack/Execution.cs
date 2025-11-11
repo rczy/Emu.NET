@@ -1,4 +1,4 @@
-namespace CPU.MOS6502.Machinery.Instructions.Misc;
+namespace CPU.MOS6502.Machinery.Instructions.FlowAndStack;
 
 static class Execution
 {
@@ -123,6 +123,36 @@ static class Execution
                 break;
         }
         op(cpu);
+        return true;
+    }
+
+    public static bool Branch(Core cpu, Operation op) // 2, 3 or 4 cycles
+    {
+        switch (cpu.Cycles)
+        {
+            case 1:
+                cpu.Address.Low = cpu.Bus.Read(cpu.Registers.PC++);
+                cpu.Address.High = 0x00;
+                op(cpu);
+                if (cpu.Data == 0) // branch not taken
+                {
+                    return true;
+                }
+                return false;
+            case 2:
+                int pcl = (byte)cpu.Registers.PC + cpu.Address;
+                cpu.Registers.PC = (ushort)(cpu.Registers.PC & 0xFF00 | pcl & 0x00FF);
+                cpu.Bus.Read(cpu.Registers.PC);
+                if (pcl > 0xFF) // page boundary crossed
+                {
+                    return false;
+                }
+                break;
+            case 3:
+                cpu.Registers.PC += 0x100;
+                cpu.Bus.Read(cpu.Registers.PC);
+                break;
+        }
         return true;
     }
 }
