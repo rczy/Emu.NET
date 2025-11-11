@@ -1,4 +1,4 @@
-using CPU.MOS6502.Internals.Instructions;
+using CPU.MOS6502.Machinery.Instructions;
 using CPU.MOS6502.Tests.Utils;
 
 namespace CPU.MOS6502.Tests.Unit.Instructions.Execution;

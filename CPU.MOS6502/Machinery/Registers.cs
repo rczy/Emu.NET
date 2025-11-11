@@ -1,4 +1,4 @@
-namespace CPU.MOS6502.Internals;
+namespace CPU.MOS6502.Machinery;
 
 public class Registers
 {

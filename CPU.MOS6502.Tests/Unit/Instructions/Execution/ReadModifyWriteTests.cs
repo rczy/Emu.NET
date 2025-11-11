@@ -1,5 +1,7 @@
 namespace CPU.MOS6502.Tests.Unit.Instructions.Execution;
 
+using ExecSteps = Machinery.Instructions.ReadModifyWrite.Execution;
+
 public class ReadModifyWriteTests
 {
     public class ZeroPage : Base
@@ -12,7 +14,7 @@ public class ReadModifyWriteTests
             adl = 0x04;
             origData = 0xCD;
             data = 0xEF;
-            AddWriteInstruction(opCode, Internals.Instructions.ReadModifyWrite.Execution.ZeroPage);
+            AddWriteInstruction(opCode, ExecSteps.ZeroPage);
             LoadData([opCode, adl, 0x00, 0x00, origData]);
         }
 
@@ -99,7 +101,7 @@ public class ReadModifyWriteTests
             adh = 0x01;
             origData = 0xCD;
             data = 0xEF;
-            AddWriteInstruction(opCode, Internals.Instructions.ReadModifyWrite.Execution.Absolute);
+            AddWriteInstruction(opCode, ExecSteps.Absolute);
 
             program = new byte[0x200];
             program[0] = opCode;
@@ -207,7 +209,7 @@ public class ReadModifyWriteTests
             bal = 0x23;
             origData = 0xCD;
             data = 0xEF;
-            AddWriteInstruction(opCode, Internals.Instructions.ReadModifyWrite.Execution.ZeroPageX);
+            AddWriteInstruction(opCode, ExecSteps.ZeroPageX);
 
             program = new byte[0x200];
             program[0] = opCode;
@@ -330,7 +332,7 @@ public class ReadModifyWriteTests
             bah = 0x01;
             origData = 0xCD;
             data = 0xEF;
-            AddWriteInstruction(opCode, Internals.Instructions.ReadModifyWrite.Execution.AbsoluteX);
+            AddWriteInstruction(opCode, ExecSteps.AbsoluteX);
 
             program = new byte[0x300];
             program[0] = opCode;

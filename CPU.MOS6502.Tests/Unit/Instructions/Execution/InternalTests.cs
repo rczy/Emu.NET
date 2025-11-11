@@ -1,6 +1,7 @@
-using CPU.MOS6502.Internals.Instructions;
-
 namespace CPU.MOS6502.Tests.Unit.Instructions.Execution;
+
+using CPU.MOS6502.Machinery.Instructions;
+using ExecSteps = Machinery.Instructions.Internal.Execution;
 
 public class InternalTests
 {
@@ -10,7 +11,7 @@ public class InternalTests
         {
             opCode = 0xAB;
             data = 0xCD;
-            AddDummyInstruction(opCode, Internals.Instructions.Internal.Execution.Immediate);
+            AddDummyInstruction(opCode, ExecSteps.Immediate);
             LoadData([opCode, data]);
         }
 
@@ -59,7 +60,7 @@ public class InternalTests
             opCode = 0xAB;
             adl = 0x04;
             data = 0xCD;
-            AddDummyInstruction(opCode, Internals.Instructions.Internal.Execution.ZeroPage);
+            AddDummyInstruction(opCode, ExecSteps.ZeroPage);
             LoadData([opCode, adl, 0x00, 0x00, data]);
         }
 
@@ -119,7 +120,7 @@ public class InternalTests
             adl = 0x23;
             adh = 0x01;
             data = 0xCD;
-            AddDummyInstruction(opCode, Internals.Instructions.Internal.Execution.Absolute);
+            AddDummyInstruction(opCode, ExecSteps.Absolute);
 
             program = new byte[0x200];
             program[0] = opCode;
@@ -196,7 +197,7 @@ public class InternalTests
             adl = 0x23;
             adh = 0x01;
             data = 0xCD;
-            AddDummyInstruction(opCode, Internals.Instructions.Internal.Execution.IndirectX);
+            AddDummyInstruction(opCode, ExecSteps.IndirectX);
 
             system.CPU.Registers.X = 4;
 
@@ -419,7 +420,7 @@ public class InternalTests
             set => system.CPU.Registers.X = value;
         }
 
-        protected override Steps Steps => Internals.Instructions.Internal.Execution.AbsoluteX;
+        protected override Steps Steps => ExecSteps.AbsoluteX;
     }
 
     public class AbsoluteY : AbsoluteIndexed
@@ -430,7 +431,7 @@ public class InternalTests
             set => system.CPU.Registers.Y = value;
         }
 
-        protected override Steps Steps => Internals.Instructions.Internal.Execution.AbsoluteY;
+        protected override Steps Steps => ExecSteps.AbsoluteY;
     }
 
     abstract public class ZeroPageIndexed : Base
@@ -528,7 +529,7 @@ public class InternalTests
             set => system.CPU.Registers.X = value;
         }
 
-        protected override Steps Steps => Internals.Instructions.Internal.Execution.ZeroPageX;
+        protected override Steps Steps => ExecSteps.ZeroPageX;
     }
 
     public class ZeroPageY : ZeroPageIndexed
@@ -539,7 +540,7 @@ public class InternalTests
             set => system.CPU.Registers.Y = value;
         }
 
-        protected override Steps Steps => Internals.Instructions.Internal.Execution.ZeroPageY;
+        protected override Steps Steps => ExecSteps.ZeroPageY;
     }
 
     public class IndirectY : Base
@@ -551,7 +552,7 @@ public class InternalTests
             bal = 0x23;
             bah = 0x01;
             data = 0xCD;
-            AddDummyInstruction(opCode, Internals.Instructions.Internal.Execution.IndirectY);
+            AddDummyInstruction(opCode, ExecSteps.IndirectY);
 
             program = new byte[0x300];
             program[0] = opCode;

@@ -1,5 +1,8 @@
 namespace CPU.MOS6502.Tests.Unit.Instructions.Execution;
 
+using Operations = Machinery.Instructions.Misc.Operations;
+using ExecSteps = Machinery.Instructions.Misc.Execution;
+
 public class MiscTests
 {
     public class Push : Base
@@ -9,7 +12,7 @@ public class MiscTests
             system.CPU.Registers.SP = 0xFF;
 
             opCode = 0xAB;
-            AddWriteInstruction(opCode, Internals.Instructions.Misc.Execution.Push);
+            AddWriteInstruction(opCode, ExecSteps.Push);
             LoadData([opCode]);
         }
 
@@ -86,7 +89,7 @@ public class MiscTests
 
             opCode = 0xAB;
             data = 0xCD;
-            AddDummyInstruction(opCode, Internals.Instructions.Misc.Execution.Pull);
+            AddDummyInstruction(opCode, ExecSteps.Pull);
 
             program = new byte[0x200];
             program[0] = opCode;
@@ -180,7 +183,7 @@ public class MiscTests
             opCode = 0xAB;
             adh = 0x02;
             adl = 0xCD;
-            AddInstruction(opCode, Internals.Instructions.Misc.Operations.JSR, Internals.Instructions.Misc.Execution.JumpToSubroutine);
+            AddInstruction(opCode, Operations.JSR, ExecSteps.JumpToSubroutine);
 
             program = new byte[0x300];
             program[0x0100] = opCode;

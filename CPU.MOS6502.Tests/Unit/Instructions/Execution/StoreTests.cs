@@ -1,6 +1,7 @@
-using CPU.MOS6502.Internals.Instructions;
-
 namespace CPU.MOS6502.Tests.Unit.Instructions.Execution;
+
+using CPU.MOS6502.Machinery.Instructions;
+using ExecSteps = Machinery.Instructions.Store.Execution;
 
 public class StoreTests
 {
@@ -11,7 +12,7 @@ public class StoreTests
             opCode = 0xAB;
             adl = 0x04;
             data = 0xCD;
-            AddWriteInstruction(opCode, Internals.Instructions.Store.Execution.ZeroPage);
+            AddWriteInstruction(opCode, ExecSteps.ZeroPage);
             LoadData([opCode, adl]);
         }
 
@@ -72,7 +73,7 @@ public class StoreTests
             adl = 0x23;
             adh = 0x01;
             data = 0xCD;
-            AddWriteInstruction(opCode, Internals.Instructions.Store.Execution.Absolute);
+            AddWriteInstruction(opCode, ExecSteps.Absolute);
 
             program = new byte[0x200];
             program[0] = opCode;
@@ -124,7 +125,7 @@ public class StoreTests
             Tick(4);
             CheckSystem(readCount: 3, writeCount: 1, cycles: 0, pc: 3);
 
-            Assert.Equal((adh << 8 ) | adl, system.CPU.Address.Full);
+            Assert.Equal((adh << 8) | adl, system.CPU.Address.Full);
             Assert.Equal(system.CPU.Address.Full, system.RAM.LastWriteAddress);
             Assert.Equal(data, system.RAM.PeekAt(system.CPU.Address.Full));
             Assert.True(opCalled);
@@ -149,7 +150,7 @@ public class StoreTests
             adl = 0x23;
             adh = 0x01;
             data = 0xCD;
-            AddWriteInstruction(opCode, Internals.Instructions.Store.Execution.IndirectX);
+            AddWriteInstruction(opCode, ExecSteps.IndirectX);
 
             system.CPU.Registers.X = 4;
 
@@ -355,7 +356,7 @@ public class StoreTests
             set => system.CPU.Registers.X = value;
         }
 
-        protected override Steps Steps => Internals.Instructions.Store.Execution.AbsoluteX;
+        protected override Steps Steps => ExecSteps.AbsoluteX;
     }
 
     public class AbsoluteY : AbsoluteIndexed
@@ -366,7 +367,7 @@ public class StoreTests
             set => system.CPU.Registers.Y = value;
         }
 
-        protected override Steps Steps => Internals.Instructions.Store.Execution.AbsoluteY;
+        protected override Steps Steps => ExecSteps.AbsoluteY;
     }
 
     abstract public class ZeroPageIndexed : Base
@@ -463,7 +464,7 @@ public class StoreTests
             set => system.CPU.Registers.X = value;
         }
 
-        protected override Steps Steps => Internals.Instructions.Store.Execution.ZeroPageX;
+        protected override Steps Steps => ExecSteps.ZeroPageX;
     }
 
     public class ZeroPageY : ZeroPageIndexed
@@ -474,7 +475,7 @@ public class StoreTests
             set => system.CPU.Registers.Y = value;
         }
 
-        protected override Steps Steps => Internals.Instructions.Store.Execution.ZeroPageY;
+        protected override Steps Steps => ExecSteps.ZeroPageY;
     }
 
     public class IndirectY : Base
@@ -486,7 +487,7 @@ public class StoreTests
             bal = 0x23;
             bah = 0x01;
             data = 0xCD;
-            AddWriteInstruction(opCode, Internals.Instructions.Store.Execution.IndirectY);
+            AddWriteInstruction(opCode, ExecSteps.IndirectY);
 
             program = new byte[0x300];
             program[0] = opCode;

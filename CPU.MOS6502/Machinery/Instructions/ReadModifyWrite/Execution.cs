@@ -1,4 +1,4 @@
-namespace CPU.MOS6502.Internals.Instructions.ReadModifyWrite;
+namespace CPU.MOS6502.Machinery.Instructions.ReadModifyWrite;
 
 static class Execution
 {

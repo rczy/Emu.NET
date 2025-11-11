@@ -1,5 +1,5 @@
-using CPU.MOS6502.Internals;
-using CPU.MOS6502.Internals.Instructions;
+using CPU.MOS6502.Machinery;
+using CPU.MOS6502.Machinery.Instructions;
 
 namespace CPU.MOS6502;
 

@@ -1,4 +1,4 @@
-namespace CPU.MOS6502.Internals.Instructions;
+namespace CPU.MOS6502.Machinery.Instructions;
 
 public class Decoder
 {

@@ -1,4 +1,4 @@
-namespace CPU.MOS6502.Internals.Instructions.SingleByte;
+namespace CPU.MOS6502.Machinery.Instructions.SingleByte;
 
 static class Execution
 {
