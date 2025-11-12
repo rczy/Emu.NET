@@ -155,4 +155,14 @@ static class Execution
         }
         return true;
     }
+
+    public static bool Break(Core cpu, Operation op) // 7 cycles
+    {
+        return true;
+    }
+
+    public static bool ReturnFromInterrupt(Core cpu, Operation op) // 6 cycles
+    {
+        return true;
+    }
 }
