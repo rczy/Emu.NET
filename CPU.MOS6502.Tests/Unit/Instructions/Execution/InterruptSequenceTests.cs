@@ -1,10 +1,7 @@
-using Xunit.Sdk;
-
-namespace CPU.MOS6502.Tests.Unit;
+namespace CPU.MOS6502.Tests.Unit.Instructions.Execution;
 
 using Machinery;
 using CPU.MOS6502.Machinery.Instructions.FlowAndStack;
-using Instructions.Execution;
 
 public class InterruptSequenceTests : Base
 {

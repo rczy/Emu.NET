@@ -3,7 +3,7 @@ namespace CPU.MOS6502.Machinery;
 public class InterruptHandler(Core cpu)
 {
     private Core Cpu { get; } = cpu;
-    private Signals LastState { get; set; } = new();
+    private bool LastNMI { get; set; }
     public bool PendingNMI { get; internal set; }
     
     public enum Interrupts { None, RES, IRQ, NMI }
@@ -13,9 +13,9 @@ public class InterruptHandler(Core cpu)
     {
         if (!PendingNMI)
         {
-            PendingNMI = !LastState.NMI && Cpu.Signals.NMI;            
+            PendingNMI = !LastNMI && Cpu.Signals.NMI;            
         }
-        LastState = Cpu.Signals;
+        LastNMI = Cpu.Signals.NMI;
     }
 
     public bool Poll()
