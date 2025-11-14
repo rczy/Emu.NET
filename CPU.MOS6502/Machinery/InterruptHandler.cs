@@ -1,7 +1,5 @@
 namespace CPU.MOS6502.Machinery;
 
-using Flags = Registers.StatusFlags;
-
 public class InterruptHandler(Core cpu)
 {
     private Core Cpu { get; } = cpu;
@@ -9,30 +7,36 @@ public class InterruptHandler(Core cpu)
     public bool PendingNMI { get; internal set; }
     
     public enum Interrupts { None, RES, IRQ, NMI }
-    public Interrupts InterruptSequence { get; private set; }
+    public Interrupts Sequence { get; private set; }
+
+    public void DetectNMI()
+    {
+        if (!PendingNMI)
+        {
+            PendingNMI = !LastState.NMI && Cpu.Signals.NMI;            
+        }
+        LastState = Cpu.Signals;
+    }
 
     public bool Poll()
     {
-        PendingNMI = !LastState.NMI && Cpu.Signals.NMI;
-        LastState = Cpu.Signals;
-
         if (Cpu.Signals.RES)
         {
-            InterruptSequence = Interrupts.RES;
+            Sequence = Interrupts.RES;
             return true;
         }
         if (PendingNMI)
         {
-            InterruptSequence = Interrupts.NMI;
+            Sequence = Interrupts.NMI;
             return true;
         }
-        if (Cpu.Signals.IRQ && !Cpu.Registers.GetFlag(Flags.Interrupt))
+        if (Cpu.Signals.IRQ && !Cpu.Registers.P.Interrupt)
         {
-            InterruptSequence = Interrupts.IRQ;
+            Sequence = Interrupts.IRQ;
             return true;
         }
 
-        InterruptSequence = Interrupts.None;
+        Sequence = Interrupts.None;
         return false;
     }
 }

@@ -55,9 +55,11 @@ public class Base
 
     protected void Tick(int cycles)
     {
-        ticks = cycles;
         for (int i = 0; i < cycles; i++)
+        {
             system.CPU.Tick();
+            ticks++;
+        }
     }
 
     protected void CheckSystem(byte readCount, byte writeCount, int cycles, ushort pc)

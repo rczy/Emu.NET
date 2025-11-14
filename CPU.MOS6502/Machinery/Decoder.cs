@@ -19,9 +19,19 @@ public class Decoder
 
     internal void ExecuteSequence()
     {
-        if (Cpu.Signals.SYNC) // fetch opcode (T0)
+        Cpu.InterruptHandler.DetectNMI();
+
+        if (Cpu.Signals.SYNC) // opcode fetch (T0)
         {
-            OpCode = Cpu.InterruptHandler.Poll() ? (byte)0x00 : Cpu.Bus.Read(Cpu.Registers.PC++);
+            if (Cpu.InterruptHandler.Poll())
+            {
+                Cpu.Bus.Read(Cpu.Registers.PC);
+                OpCode = 0x00; // force BRK
+            }
+            else
+            {
+                OpCode = Cpu.Bus.Read(Cpu.Registers.PC++);
+            }
             Cpu.Signals.SYNC = false;
             return;
         }

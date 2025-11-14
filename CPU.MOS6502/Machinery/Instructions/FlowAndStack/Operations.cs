@@ -16,4 +16,13 @@ static class Operations
     {
         cpu.Registers.PC = cpu.Address;
     }
+
+    public static void BRK(Core cpu)
+    {
+        cpu.Registers.PC = cpu.Address;
+    }
+
+    public static void RTI(Core cpu)
+    {
+    }
 }

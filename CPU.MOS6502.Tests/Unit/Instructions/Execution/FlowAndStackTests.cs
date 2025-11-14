@@ -572,4 +572,111 @@ public class FlowAndStackTests
             CheckSystem(readCount: 4, writeCount: 0, cycles: 0, pc: 0x102);
         }
     }
+    
+    public class ReturnFromInterrupt : Base
+    {
+        public ReturnFromInterrupt() : base()
+        {
+            system.CPU.Registers.SP = 0xFC;
+            system.CPU.Registers.PC = 0x02CD;
+            system.CPU.Registers.P = 0b1010_1010;
+
+            opCode = 0xAB;
+            data = 0b0101_0101; // P (status) register
+            adh = 0x01; // PC high
+            adl = 0x02; // PC low
+            AddInstruction(opCode, Operations.RTI, ExecSteps.ReturnFromInterrupt);
+
+            program = new byte[0x300];
+            program[0x02CD] = opCode;
+            program[0x01FD] = data;
+            program[0x01FE] = adl;
+            program[0x01FF] = adh;
+            LoadData(program);
+        }
+
+        [Fact]
+        public void Before_IsCorrect()
+        {
+            CheckSystem(readCount: 0, writeCount: 0, cycles: 0, pc: 0x02CD);
+
+            Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
+        }
+
+        [Fact]
+        public void T0_IsCorrect() // fetch opcode
+        {
+            Tick(1);
+            CheckSystem(readCount: 1, writeCount: 0, cycles: 1, pc: 0x02CE);
+
+            Assert.Equal(opCode, system.CPU.Decoder.OpCode);
+        }
+
+        [Fact]
+        public void T1_IsCorrect() // dummy read
+        {
+            Tick(2);
+            CheckSystem(readCount: 2, writeCount: 0, cycles: 2, pc: 0x02CE);
+
+            Assert.Equal(system.CPU.Registers.PC, system.RAM.LastReadAddress);
+        }
+
+        [Fact]
+        public void T2_IsCorrect() // fetch data from stack (discarded)
+        {
+            Tick(3);
+            CheckSystem(readCount: 3, writeCount: 0, cycles: 3, pc: 0x02CE);
+
+            Assert.Equal(0x01FC, system.RAM.LastReadAddress);
+        }
+
+        [Fact]
+        public void T3_IsCorrect() // pull P from stack
+        {
+            Tick(4);
+            CheckSystem(readCount: 4, writeCount: 0, cycles: 4, pc: 0x02CE);
+            
+            Assert.Equal(data, (byte)system.CPU.Registers.P);
+            Assert.False(system.CPU.Registers.P.Negative);
+            Assert.True(system.CPU.Registers.P.Overflow);
+            Assert.False(system.CPU.Registers.P.Unused);
+            Assert.True(system.CPU.Registers.P.Break);
+            Assert.False(system.CPU.Registers.P.Decimal);
+            Assert.True(system.CPU.Registers.P.Interrupt);
+            Assert.False(system.CPU.Registers.P.Zero);
+            Assert.True(system.CPU.Registers.P.Carry);
+
+            Assert.Equal(0x01FD, system.RAM.LastReadAddress);
+            Assert.Equal(0xFD, system.CPU.Registers.SP);
+        }
+
+        [Fact]
+        public void T4_IsCorrect() // pull PCL from stack
+        {
+            Tick(5);
+            CheckSystem(readCount: 5, writeCount: 0, cycles: 5, pc: 0x0202);
+
+            Assert.Equal(0x01FE, system.RAM.LastReadAddress);
+            Assert.Equal(0xFE, system.CPU.Registers.SP);
+        }
+
+        [Fact]
+        public void T5_IsCorrect() // pull PCH from stack
+        {
+            Tick(6);
+            CheckSystem(readCount: 6, writeCount: 0, cycles: 0, pc: 0x0102);
+
+            Assert.Equal(0x01FF, system.RAM.LastReadAddress);
+            Assert.Equal(0xFF, system.CPU.Registers.SP);
+        }
+
+        [Fact]
+        public void After_IsCorrect() // next instruction
+        {
+            Tick(7);
+            CheckSystem(readCount: 7, writeCount: 0, cycles: 1, pc: 0x0103);
+
+            Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
+        }
+    }
 }

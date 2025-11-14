@@ -1,5 +1,7 @@
 namespace CPU.MOS6502.Machinery.Instructions.FlowAndStack;
 
+using Seq = InterruptHandler.Interrupts;
+
 static class Execution
 {
     public static bool Push(Core cpu, Operation op) // 3 cycles
@@ -53,7 +55,7 @@ static class Execution
                 cpu.Bus.Write((ushort)(0x0100 | cpu.Registers.SP--), (byte)(cpu.Registers.PC >>> 8));
                 return false;
             case 4:
-                cpu.Bus.Write((ushort)(0x0100 | cpu.Registers.SP--), (byte)(cpu.Registers.PC & 0x00FF));
+                cpu.Bus.Write((ushort)(0x0100 | cpu.Registers.SP--), (byte)cpu.Registers.PC);
                 return false;
             case 5:
                 cpu.Address.High = cpu.Bus.Read(cpu.Registers.PC);
@@ -79,8 +81,8 @@ static class Execution
                 return false;
             case 4:
                 cpu.Registers.PC &= 0x00FF;
-                byte PCH = cpu.Data = cpu.Bus.Read((ushort)(0x0100 | ++cpu.Registers.SP));
-                cpu.Registers.PC |= (ushort)(PCH << 8);
+                byte pch = cpu.Data = cpu.Bus.Read((ushort)(0x0100 | ++cpu.Registers.SP));
+                cpu.Registers.PC |= (ushort)(pch << 8);
                 return false;
             case 5:
                 cpu.Data = cpu.Bus.Read(cpu.Registers.PC); // dummy read
@@ -158,11 +160,89 @@ static class Execution
 
     public static bool Break(Core cpu, Operation op) // 7 cycles
     {
+        switch (cpu.Cycles)
+        {
+            case 1:
+                cpu.Data = cpu.Bus.Read(cpu.Registers.PC); // dummy read
+                return false;
+            case 2:
+                AccessStackWith((byte)(cpu.Registers.PC >>> 8));
+                return false;
+            case 3:
+                AccessStackWith((byte)cpu.Registers.PC);
+                return false;
+            case 4:
+                cpu.Registers.P.Break = cpu.InterruptHandler.Sequence == Seq.None;
+                AccessStackWith(cpu.Registers.P);
+                return false;
+            case 5:
+                cpu.Registers.P.Interrupt = true;
+                ushort vectorLow = cpu.InterruptHandler.Sequence switch
+                {
+                    Seq.NMI => 0xFFFA,
+                    Seq.RES => 0xFFFC,
+                    Seq.IRQ => 0xFFFE,
+                    Seq.None => 0xFFFE,
+                };
+                cpu.Address.Low = cpu.Bus.Read(vectorLow);
+                return false;
+            case 6:
+                ushort vectorHigh = cpu.InterruptHandler.Sequence switch
+                {
+                    Seq.NMI => 0xFFFB,
+                    Seq.RES => 0xFFFD,
+                    Seq.IRQ => 0xFFFF,
+                    Seq.None => 0xFFFF,
+                };
+                cpu.Address.High = cpu.Bus.Read(vectorHigh);
+
+                if (cpu.InterruptHandler.Sequence == Seq.NMI)
+                {
+                    cpu.InterruptHandler.PendingNMI = false;
+                }
+                break;
+        }
+        op(cpu);
         return true;
+
+        void AccessStackWith(byte data)
+        {
+            var sp = (ushort)(0x0100 | cpu.Registers.SP--);
+            if (cpu.InterruptHandler.Sequence != Seq.RES)
+            {
+                cpu.Bus.Write(sp, data);
+            }
+            else
+            {
+                cpu.Bus.Read(sp);
+            }
+        }
     }
 
     public static bool ReturnFromInterrupt(Core cpu, Operation op) // 6 cycles
     {
+        switch (cpu.Cycles)
+        {
+            case 1:
+                cpu.Data = cpu.Bus.Read(cpu.Registers.PC); // dummy read
+                return false;
+            case 2:
+                cpu.Data = cpu.Bus.Read((ushort)(0x0100 | cpu.Registers.SP)); // dummy read
+                return false;
+            case 3:
+                cpu.Registers.P = cpu.Bus.Read((ushort)(0x0100 | ++cpu.Registers.SP));
+                return false;
+            case 4:
+                cpu.Registers.PC &= 0xFF00;
+                cpu.Registers.PC |= cpu.Bus.Read((ushort)(0x0100 | ++cpu.Registers.SP));
+                return false;
+            case 5:
+                cpu.Registers.PC &= 0x00FF;
+                byte pch = cpu.Data = cpu.Bus.Read((ushort)(0x0100 | ++cpu.Registers.SP));
+                cpu.Registers.PC |= (ushort)(pch << 8);
+                break;
+        }
+        op(cpu);
         return true;
     }
 }
