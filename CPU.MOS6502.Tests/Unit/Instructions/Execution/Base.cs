@@ -9,33 +9,33 @@ public class Base
 
     protected byte opCode; // dummy opcode
     protected byte data; // dummy data
-    protected byte adl; // effective addres low byte
-    protected byte adh; // effective addres high byte
-    protected byte bal; // base addres low byte
-    protected byte bah; // base addres high byte
-    protected byte ial; // indirect addres low byte
-    protected byte iah; // indirect addres high byte
+    protected byte adl; // effective address low byte
+    protected byte adh; // effective address high byte
+    protected byte bal; // base address low byte
+    protected byte bah; // base address high byte
+    protected byte ial; // indirect address low byte
+    protected byte iah; // indirect address high byte
 
     protected byte[] program = [];
 
     protected bool opCalled; // operation is executed
-    protected int ticks;
+    private int _ticks;
 
     protected Base()
     {
         system = new SimpleSystem();
         opCalled = false;
-        ticks = 0;
+        _ticks = 0;
     }
 
-    protected void AddDummyInstruction(byte opCode, Steps steps)
+    protected void AddDummyInstruction(byte opcode, Steps steps)
     {
-        AddInstruction(opCode, cpu => opCalled = true, steps);
+        AddInstruction(opcode, _ => opCalled = true, steps);
     }
 
-    protected void AddWriteInstruction(byte opCode, Steps steps)
+    protected void AddWriteInstruction(byte opcode, Steps steps)
     {
-        AddInstruction(opCode, Write, steps);
+        AddInstruction(opcode, Write, steps);
         return;
 
         void Write(Core cpu)
@@ -45,14 +45,14 @@ public class Base
         }
     }
 
-    protected void AddInstruction(byte opCode, Operation op, Steps steps)
+    protected void AddInstruction(byte opcode, Operation op, Steps steps)
     {
-        system.CPU.Decoder.AddInstruction(opCode, op, steps);
+        system.CPU.Decoder.AddInstruction(opcode, op, steps);
     }
 
-    protected void LoadData(byte[] data)
+    protected void LoadData(byte[] bytes)
     {
-        system.RAM.LoadData(data);
+        system.RAM.LoadData(bytes);
     }
 
     protected void Tick(int cycles)
@@ -60,7 +60,7 @@ public class Base
         for (int i = 0; i < cycles; i++)
         {
             system.CPU.Tick();
-            ticks++;
+            _ticks++;
         }
     }
 
@@ -70,6 +70,6 @@ public class Base
         Assert.Equal(writeCount, system.RAM.WriteCount);
         Assert.Equal(cycles, system.CPU.Cycles);
         Assert.Equal(pc, system.CPU.Registers.PC);
-        Assert.Equal(ticks, readCount + writeCount);
+        Assert.Equal(_ticks, readCount + writeCount);
     }
 }
