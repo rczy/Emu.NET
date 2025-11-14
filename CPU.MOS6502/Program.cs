@@ -42,3 +42,5 @@ for (i = 0; i < 2000000; i++)
 sw.Stop();
 Console.WriteLine($"tick: {i} cycles: {cpu.Cycles} elapsed: {sw.Elapsed.TotalMilliseconds} ms");
 */
+
+Console.WriteLine($"Sequence: {cpu.Decoder.CurrentInstruction.Steps.Method.Name}, operation: {cpu.Decoder.CurrentInstruction.Op.Method.Name}");

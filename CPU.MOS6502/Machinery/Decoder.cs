@@ -4,7 +4,7 @@ using Instructions;
 
 public class Decoder
 {
-    public record Instruction(string Mnemonic, string Addressing, Steps Steps, Operation Op);
+    public record Instruction(Steps Steps, Operation Op);
     private Instruction[] InstructionTable { get; } = new Instruction[256];
 
     private Core Cpu { get; }
@@ -39,14 +39,14 @@ public class Decoder
         Cpu.Signals.SYNC = CurrentInstruction.Steps(Cpu, CurrentInstruction.Op);
     }
 
-    internal void AddInstruction(byte opcode, string mnemonic, string addressing, Operation op, Steps steps)
+    internal void AddInstruction(byte opcode, Operation op, Steps steps)
     {
-        InstructionTable[opcode] = new Instruction(mnemonic, addressing, steps, op);
+        InstructionTable[opcode] = new Instruction(steps, op);
     }
 
     private void LoadInstructionTable()
     {
         for (int i = 0; i < InstructionTable.Length; i++)
-            AddInstruction((byte)i, "???", "Implied", Instructions.SingleByte.Operations.UNKNOWN, Instructions.SingleByte.Execution.Implied);
+            AddInstruction((byte)i, Instructions.SingleByte.Operations.UNKNOWN, Instructions.SingleByte.Execution.Implied);
     }
 }

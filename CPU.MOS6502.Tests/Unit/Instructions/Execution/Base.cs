@@ -35,17 +35,19 @@ public class Base
 
     protected void AddWriteInstruction(byte opCode, Steps steps)
     {
-        void write(Core cpu)
+        AddInstruction(opCode, Write, steps);
+        return;
+
+        void Write(Core cpu)
         {
             cpu.Bus.Write(cpu.Address, data);
             opCalled = true;
         }
-        AddInstruction(opCode, write, steps);
     }
 
     protected void AddInstruction(byte opCode, Operation op, Steps steps)
     {
-        system.CPU.Decoder.AddInstruction(opCode, "TEST", "test addressing", op, steps);
+        system.CPU.Decoder.AddInstruction(opCode, op, steps);
     }
 
     protected void LoadData(byte[] data)
