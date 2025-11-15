@@ -582,7 +582,7 @@ public class FlowAndStackTests
             system.CPU.Registers.P = 0b1010_1010;
 
             opCode = 0xAB;
-            data = 0b0101_0101; // P (status) register
+            data = 0b0101_0101; // P (status) register; Unused and Break flags (bit 4 and 5) are not real registers
             adh = 0x01; // PC high
             adl = 0x02; // PC low
             AddInstruction(opCode, Operations.RTI, ExecSteps.ReturnFromInterrupt);
@@ -636,11 +636,11 @@ public class FlowAndStackTests
             Tick(4);
             CheckSystem(readCount: 4, writeCount: 0, cycles: 4, pc: 0x02CE);
             
-            Assert.Equal(data, (byte)system.CPU.Registers.P);
+            Assert.Equal(data & 0xEF | 0x20, (byte)system.CPU.Registers.P); // bit 5 always set, bit 4 is cleared
             Assert.False(system.CPU.Registers.P.Negative);
             Assert.True(system.CPU.Registers.P.Overflow);
-            Assert.False(system.CPU.Registers.P.Unused);
-            Assert.True(system.CPU.Registers.P.Break);
+            Assert.True(system.CPU.Registers.P.Unused); // flag is always set
+            Assert.False(system.CPU.Registers.P.Break); // flag cleared
             Assert.False(system.CPU.Registers.P.Decimal);
             Assert.True(system.CPU.Registers.P.Interrupt);
             Assert.False(system.CPU.Registers.P.Zero);

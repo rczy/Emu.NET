@@ -231,6 +231,7 @@ static class Execution
                 return false;
             case 3:
                 cpu.Registers.P = cpu.Bus.Read((ushort)(0x0100 | ++cpu.Registers.SP));
+                cpu.Registers.P.Break = false;
                 return false;
             case 4:
                 cpu.Registers.PC &= 0xFF00;

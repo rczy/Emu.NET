@@ -171,6 +171,7 @@ public class InterruptSequenceTests : Base
             Tick(5);
             CheckSystem(readCount: (byte)(RW ? 2 : 5), writeCount: (byte)(RW ? 3 : 0), cycles: 5, pc: Pc);
 
+            Assert.True(system.CPU.Registers.P.Unused);
             Assert.Equal(Sequence == InterruptHandler.Interrupts.None, system.CPU.Registers.P.Break);
             Assert.False(system.CPU.Registers.P.Interrupt);
             if (RW)
