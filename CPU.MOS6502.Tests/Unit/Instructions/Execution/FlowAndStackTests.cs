@@ -636,11 +636,11 @@ public class FlowAndStackTests
             Tick(4);
             CheckSystem(readCount: 4, writeCount: 0, cycles: 4, pc: 0x02CE);
             
-            Assert.Equal(data & 0xEF | 0x20, (byte)system.CPU.Registers.P); // bit 5 always set, bit 4 is cleared
+            Assert.Equal(data & 0xEF | 0x20, (byte)system.CPU.Registers.P); // bit 5 is always set, bit 4 is cleared
             Assert.False(system.CPU.Registers.P.Negative);
             Assert.True(system.CPU.Registers.P.Overflow);
             Assert.True(system.CPU.Registers.P.Unused); // flag is always set
-            Assert.False(system.CPU.Registers.P.Break); // flag cleared
+            Assert.False(system.CPU.Registers.P.Break); // flag is cleared
             Assert.False(system.CPU.Registers.P.Decimal);
             Assert.True(system.CPU.Registers.P.Interrupt);
             Assert.False(system.CPU.Registers.P.Zero);
