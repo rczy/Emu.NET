@@ -87,4 +87,151 @@ public class InternalTests : Base
         Assert.Equal(result, system.CPU.Registers.A);
         CheckFlags(negative, zero, carry, interrupt: false, @decimal: true, overflow);
     }
+
+    [Theory]
+    [InlineData(0b1100_1100, 0b0000_0000, 0b0000_0000, false, true)]
+    [InlineData(0b1100_1100, 0b1111_1111, 0b1100_1100, true, false)]
+    [InlineData(0b1100_1100, 0b0011_0011, 0b0000_0000, false, true)]
+    [InlineData(0b1100_1100, 0b1100_1100, 0b1100_1100, true, false)]
+    public void AND_Executes_Correctly(byte accumulator, byte data, byte result, bool negative, bool zero)
+    {
+        system.CPU.Registers.A = accumulator;
+        system.CPU.Data = data;
+        Machinery.Instructions.Internal.Operations.AND(system.CPU);
+        
+        Assert.Equal(result, system.CPU.Registers.A);
+        CheckFlags(negative, zero, carry: false, interrupt: false, @decimal: false, overflow: false);
+    }
+    
+    [Theory]
+    [InlineData(0b1100_1100, 0b0000_0000, false, false, true)]
+    [InlineData(0b1100_1100, 0b1111_1111, true, true, false)]
+    [InlineData(0b1100_1100, 0b0101_0101, false, true, false)]
+    [InlineData(0b0011_0011, 0b1010_1010, true, false, false)]
+    public void BIT_Executes_Correctly(byte accumulator, byte data, bool negative, bool overflow, bool zero)
+    {
+        system.CPU.Registers.A = accumulator;
+        system.CPU.Data = data;
+        Machinery.Instructions.Internal.Operations.BIT(system.CPU);
+        
+        Assert.Equal(accumulator, system.CPU.Registers.A);
+        CheckFlags(negative, zero, carry: false, interrupt: false, @decimal: false, overflow: overflow);
+    }
+    
+    [Theory]
+    [InlineData(0x00, 0x00, true, false, true)]
+    [InlineData(0xAB, 0xCD, false, true, false)]
+    [InlineData(0xCD, 0xAB, true, false, false)]
+    [InlineData(0xAB, 0xAB, true, false, true)]
+    public void CMP_Executes_Correctly(byte accumulator, byte data, bool carry, bool negative, bool zero)
+    {
+        system.CPU.Registers.A = accumulator;
+        system.CPU.Data = data;
+        Machinery.Instructions.Internal.Operations.CMP(system.CPU);
+        
+        Assert.Equal(accumulator, system.CPU.Registers.A);
+        CheckFlags(negative, zero, carry, interrupt: false, @decimal: false, overflow: false);
+    }
+    
+    [Theory]
+    [InlineData(0x00, 0x00, true, false, true)]
+    [InlineData(0xAB, 0xCD, false, true, false)]
+    [InlineData(0xCD, 0xAB, true, false, false)]
+    [InlineData(0xAB, 0xAB, true, false, true)]
+    public void CPX_Executes_Correctly(byte accumulator, byte data, bool carry, bool negative, bool zero)
+    {
+        system.CPU.Registers.X = accumulator;
+        system.CPU.Data = data;
+        Machinery.Instructions.Internal.Operations.CPX(system.CPU);
+        
+        Assert.Equal(accumulator, system.CPU.Registers.X);
+        CheckFlags(negative, zero, carry, interrupt: false, @decimal: false, overflow: false);
+    }
+    
+    [Theory]
+    [InlineData(0x00, 0x00, true, false, true)]
+    [InlineData(0xAB, 0xCD, false, true, false)]
+    [InlineData(0xCD, 0xAB, true, false, false)]
+    [InlineData(0xAB, 0xAB, true, false, true)]
+    public void CPY_Executes_Correctly(byte accumulator, byte data, bool carry, bool negative, bool zero)
+    {
+        system.CPU.Registers.Y = accumulator;
+        system.CPU.Data = data;
+        Machinery.Instructions.Internal.Operations.CPY(system.CPU);
+        
+        Assert.Equal(accumulator, system.CPU.Registers.Y);
+        CheckFlags(negative, zero, carry, interrupt: false, @decimal: false, overflow: false);
+    }
+    
+    [Theory]
+    [InlineData(0b1100_1100, 0b0000_0000, 0b1100_1100, true, false)]
+    [InlineData(0b1100_1100, 0b1111_1111, 0b0011_0011, false, false)]
+    [InlineData(0b1100_1100, 0b0011_0011, 0b1111_1111, true, false)]
+    [InlineData(0b1100_1100, 0b1100_1100, 0b0000_0000, false, true)]
+    public void EOR_Executes_Correctly(byte accumulator, byte data, byte result, bool negative, bool zero)
+    {
+        system.CPU.Registers.A = accumulator;
+        system.CPU.Data = data;
+        Machinery.Instructions.Internal.Operations.EOR(system.CPU);
+        
+        Assert.Equal(result, system.CPU.Registers.A);
+        CheckFlags(negative, zero, carry: false, interrupt: false, @decimal: false, overflow: false);
+    }
+    
+    [Theory]
+    [InlineData(0x00, 0x80, true, false)]
+    [InlineData(0x80, 0x00, false, true)]
+    [InlineData(0x80, 0x40, false, false)]
+    public void LDA_Executes_Correctly(byte register, byte data, bool negative, bool zero)
+    {
+        system.CPU.Registers.A = register;
+        system.CPU.Data = data;
+        Machinery.Instructions.Internal.Operations.LDA(system.CPU);
+        
+        Assert.Equal(data, system.CPU.Registers.A);
+        CheckFlags(negative, zero, carry: false, interrupt: false, @decimal: false, overflow: false);
+    }
+    
+    [Theory]
+    [InlineData(0x00, 0x80, true, false)]
+    [InlineData(0x80, 0x00, false, true)]
+    [InlineData(0x80, 0x40, false, false)]
+    public void LDX_Executes_Correctly(byte register, byte data, bool negative, bool zero)
+    {
+        system.CPU.Registers.X = register;
+        system.CPU.Data = data;
+        Machinery.Instructions.Internal.Operations.LDX(system.CPU);
+        
+        Assert.Equal(data, system.CPU.Registers.X);
+        CheckFlags(negative, zero, carry: false, interrupt: false, @decimal: false, overflow: false);
+    }
+    
+    [Theory]
+    [InlineData(0x00, 0x80, true, false)]
+    [InlineData(0x80, 0x00, false, true)]
+    [InlineData(0x80, 0x40, false, false)]
+    public void LDY_Executes_Correctly(byte register, byte data, bool negative, bool zero)
+    {
+        system.CPU.Registers.Y = register;
+        system.CPU.Data = data;
+        Machinery.Instructions.Internal.Operations.LDY(system.CPU);
+        
+        Assert.Equal(data, system.CPU.Registers.Y);
+        CheckFlags(negative, zero, carry: false, interrupt: false, @decimal: false, overflow: false);
+    }
+    
+    [Theory]
+    [InlineData(0b1100_1100, 0b0000_0000, 0b1100_1100, true, false)]
+    [InlineData(0b1100_1100, 0b1111_1111, 0b1111_1111, true, false)]
+    [InlineData(0b1100_1100, 0b0011_0011, 0b1111_1111, true, false)]
+    [InlineData(0b1100_1100, 0b1100_1100, 0b1100_1100, true, false)]
+    public void ORA_Executes_Correctly(byte accumulator, byte data, byte result, bool negative, bool zero)
+    {
+        system.CPU.Registers.A = accumulator;
+        system.CPU.Data = data;
+        Machinery.Instructions.Internal.Operations.ORA(system.CPU);
+        
+        Assert.Equal(result, system.CPU.Registers.A);
+        CheckFlags(negative, zero, carry: false, interrupt: false, @decimal: false, overflow: false);
+    }
 }

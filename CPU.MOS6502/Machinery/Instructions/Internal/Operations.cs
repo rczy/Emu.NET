@@ -37,42 +37,75 @@ static class Operations
     
     public static void AND(Core cpu)
     {
+        cpu.Registers.A &= cpu.Data;
+        cpu.Registers.P.Negative = (cpu.Registers.A & 0x80) != 0;
+        cpu.Registers.P.Zero = cpu.Registers.A == 0;
     }
     
     public static void BIT(Core cpu)
     {
+        cpu.Registers.P.Zero = (cpu.Registers.A & cpu.Data) == 0;
+        cpu.Registers.P.Negative = (cpu.Data & 0x80) != 0;
+        cpu.Registers.P.Overflow = (cpu.Data & 0x40) != 0;
     }
     
     public static void CMP(Core cpu)
     {
+        var result = cpu.Registers.A - cpu.Data;
+        cpu.Registers.P.Carry = result >= 0;
+        cpu.Registers.P.Zero = result == 0;
+        cpu.Registers.P.Negative = (result & 0x80) != 0;
     }
     
     public static void CPX(Core cpu)
     {
+        var result = cpu.Registers.X - cpu.Data;
+        cpu.Registers.P.Carry = result >= 0;
+        cpu.Registers.P.Zero = result == 0;
+        cpu.Registers.P.Negative = (result & 0x80) != 0;
     }
     
     public static void CPY(Core cpu)
     {
+        var result = cpu.Registers.Y - cpu.Data;
+        cpu.Registers.P.Carry = result >= 0;
+        cpu.Registers.P.Zero = result == 0;
+        cpu.Registers.P.Negative = (result & 0x80) != 0;
     }
     
     public static void EOR(Core cpu)
     {
+        cpu.Registers.A ^= cpu.Data;
+        cpu.Registers.P.Negative = (cpu.Registers.A & 0x80) != 0;
+        cpu.Registers.P.Zero = cpu.Registers.A == 0;
     }
     
     public static void LDA(Core cpu)
     {
+        cpu.Registers.A = cpu.Data;
+        cpu.Registers.P.Negative = (cpu.Registers.A & 0x80) != 0;
+        cpu.Registers.P.Zero = cpu.Registers.A == 0;
     }
     
     public static void LDX(Core cpu)
     {
+        cpu.Registers.X = cpu.Data;
+        cpu.Registers.P.Negative = (cpu.Registers.X & 0x80) != 0;
+        cpu.Registers.P.Zero = cpu.Registers.X == 0;
     }
     
     public static void LDY(Core cpu)
     {
+        cpu.Registers.Y = cpu.Data;
+        cpu.Registers.P.Negative = (cpu.Registers.Y & 0x80) != 0;
+        cpu.Registers.P.Zero = cpu.Registers.Y == 0;
     }
     
     public static void ORA(Core cpu)
     {
+        cpu.Registers.A |= cpu.Data;
+        cpu.Registers.P.Negative = (cpu.Registers.A & 0x80) != 0;
+        cpu.Registers.P.Zero = cpu.Registers.A == 0;
     }
     
     public static void SBC(Core cpu)
