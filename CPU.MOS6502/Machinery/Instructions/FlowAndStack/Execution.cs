@@ -133,8 +133,7 @@ static class Execution
         switch (cpu.Cycles)
         {
             case 1:
-                cpu.Address.Low = cpu.Bus.Read(cpu.Registers.PC++);
-                cpu.Address.High = 0x00;
+                cpu.Address.Low = cpu.Bus.Read(cpu.Registers.PC++); // fetch offset
                 op(cpu);
                 if (cpu.Data == 0) // branch not taken
                 {
@@ -142,16 +141,21 @@ static class Execution
                 }
                 return false;
             case 2:
-                int pcl = (byte)cpu.Registers.PC + cpu.Address;
-                cpu.Registers.PC = (ushort)(cpu.Registers.PC & 0xFF00 | pcl & 0x00FF);
+                var offset = cpu.Address.Low;
+                var negative = (offset & 0x80) != 0;
+                var pcl = (byte)cpu.Registers.PC + offset;
+                var carry = (pcl & 0x100) != 0;
+                cpu.Registers.PC = (ushort)((cpu.Registers.PC & 0xFF00) | (pcl & 0x00FF));
                 cpu.Bus.Read(cpu.Registers.PC);
-                if (pcl > 0xFF) // page boundary crossed
+                if (negative ^ carry) // page boundary crossed
                 {
+                    cpu.Address.High = (byte)(carry ? 0x01 : 0xFF);
+                    cpu.Address.Low = 0x00;
                     return false;
                 }
                 break;
             case 3:
-                cpu.Registers.PC += 0x100;
+                cpu.Registers.PC += cpu.Address;
                 cpu.Bus.Read(cpu.Registers.PC);
                 break;
         }

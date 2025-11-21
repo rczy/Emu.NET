@@ -510,24 +510,24 @@ public class FlowAndStackTests
     {
         public Branch() : base()
         {
-            system.CPU.Registers.PC = 0x80;
             opCode = 0xAB;
-
-            program = new byte[200];
-            program[0x80] = opCode;
-            LoadData(program);
+            program = new byte[0x400];
         }
 
-        protected void ArrangeBranching(bool takeBranch, byte offset)
+        protected void ArrangeBranching(ushort initialPc, byte offset, bool takeBranch)
         {
             AddInstruction(opCode, cpu => cpu.Data = (byte)(takeBranch ? 1 : 0), ExecSteps.Branch);
-            program[0x81] = offset;
+            program[initialPc] = opCode;
+            program[initialPc + 1] = offset;
             LoadData(program);
+
+            system.CPU.Registers.PC = initialPc;
         }
 
         [Fact]
         public void Before_IsCorrect()
         {
+            ArrangeBranching(0x0080, 0x00, false);
             CheckSystem(readCount: 0, writeCount: 0, cycles: 0, pc: 0x80);
 
             Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
@@ -536,6 +536,7 @@ public class FlowAndStackTests
         [Fact]
         public void T0_IsCorrect() // fetch opcode
         {
+            ArrangeBranching(0x0080, 0x00, false);
             Tick(1);
             CheckSystem(readCount: 1, writeCount: 0, cycles: 1, pc: 0x81);
 
@@ -543,11 +544,11 @@ public class FlowAndStackTests
         }
 
         [Theory]
-        [InlineData(false, 0x00, 0)] // branch is not taken
-        [InlineData(true, 0x00, 2)] // branch is taken
-        public void T1_IsCorrect(bool takeBranch, byte offset, int cycles) // fetch branch offset
+        [InlineData(false, 0)] // branch is not taken
+        [InlineData(true, 2)] // branch is taken
+        public void T1_IsCorrect(bool takeBranch, int cycles) // fetch branch offset
         {
-            ArrangeBranching(takeBranch, offset);
+            ArrangeBranching(0x0080, 0x00, takeBranch);
             Tick(2);
             CheckSystem(readCount: 2, writeCount: 0, cycles: cycles, pc: 0x82);
 
@@ -555,21 +556,25 @@ public class FlowAndStackTests
         }
 
         [Theory]
-        [InlineData(0x40, 0, 0x00C2)] // no page crossing
-        [InlineData(0x80, 3, 0x0002)] // with page crossing
-        public void T2_IsCorrect(byte offset, int cycles, ushort pc) // offset added to program counter
+        [InlineData(0x0200, 0x40, 0, 0x0242)] // no page crossing, forward
+        [InlineData(0x0240, 0xE0, 0, 0x0222)] // no page crossing, backward
+        [InlineData(0x02EF, 0x0F, 3, 0x0200)] // with page crossing, forward
+        [InlineData(0x0200, 0xFD, 3, 0x02FF)] // with page crossing, backward
+        public void T2_IsCorrect(ushort initialPc, byte offset, int cycles, ushort pc) // offset added to program counter
         {
-            ArrangeBranching(true, offset);
+            ArrangeBranching(initialPc, offset, true);
             Tick(3);
             CheckSystem(readCount: 3, writeCount: 0, cycles: cycles, pc: pc);
         }
 
-        [Fact]
-        public void T3_IsCorrect() // carry added
+        [Theory]
+        [InlineData(0x02EF, 0x0F, 0x0300)]
+        [InlineData(0x0200, 0xFD, 0x01FF)]
+        public void T3_IsCorrect(ushort initialPc, byte offset, ushort pc) // page boundary crossed
         {
-            ArrangeBranching(true, 0x80);
+            ArrangeBranching(initialPc, offset, true);
             Tick(4);
-            CheckSystem(readCount: 4, writeCount: 0, cycles: 0, pc: 0x102);
+            CheckSystem(readCount: 4, writeCount: 0, cycles: 0, pc: pc);
         }
     }
     
