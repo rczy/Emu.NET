@@ -13,6 +13,7 @@ public class StoreTests : Base
         Machinery.Instructions.Store.Operations.STA(system.CPU);
         
         Assert.Equal(Data, system.CPU.Data);
+        CheckFlags(negative: false, zero: false, carry: false, interrupt: false, @decimal: false, overflow: false);
     }
     
     [Fact]
@@ -23,6 +24,7 @@ public class StoreTests : Base
         Machinery.Instructions.Store.Operations.STX(system.CPU);
         
         Assert.Equal(Data, system.CPU.Data);
+        CheckFlags(negative: false, zero: false, carry: false, interrupt: false, @decimal: false, overflow: false);
     }
     
     [Fact]
@@ -33,5 +35,6 @@ public class StoreTests : Base
         Machinery.Instructions.Store.Operations.STY(system.CPU);
         
         Assert.Equal(Data, system.CPU.Data);
+        CheckFlags(negative: false, zero: false, carry: false, interrupt: false, @decimal: false, overflow: false);
     }
 }

@@ -8,9 +8,9 @@ static class Operations
     
     public static void ASL(Core cpu)
     {
-        cpu.Registers.P.Carry = (cpu.Registers.A & 0b1000_0000) != 0;
+        cpu.Registers.P.Carry = (cpu.Registers.A & 0x80) != 0;
         cpu.Registers.A <<= 1;
-        cpu.Registers.P.Negative = (cpu.Registers.A & 0b1000_0000) != 0;
+        cpu.Registers.P.Negative = (cpu.Registers.A & 0x80) != 0;
         cpu.Registers.P.Zero = cpu.Registers.A == 0;
     }
     
@@ -37,34 +37,34 @@ static class Operations
     public static void DEX(Core cpu)
     {
         cpu.Registers.X -= 1;
-        cpu.Registers.P.Negative = (cpu.Registers.X & 0b1000_0000) != 0;
+        cpu.Registers.P.Negative = (cpu.Registers.X & 0x80) != 0;
         cpu.Registers.P.Zero = cpu.Registers.X == 0;
     }
     
     public static void DEY(Core cpu)
     {
         cpu.Registers.Y -= 1;
-        cpu.Registers.P.Negative = (cpu.Registers.Y & 0b1000_0000) != 0;
+        cpu.Registers.P.Negative = (cpu.Registers.Y & 0x80) != 0;
         cpu.Registers.P.Zero = cpu.Registers.Y == 0;
     }
     
     public static void INX(Core cpu)
     {
         cpu.Registers.X += 1;
-        cpu.Registers.P.Negative = (cpu.Registers.X & 0b1000_0000) != 0;
+        cpu.Registers.P.Negative = (cpu.Registers.X & 0x80) != 0;
         cpu.Registers.P.Zero = cpu.Registers.X == 0;
     }
     
     public static void INY(Core cpu)
     {
         cpu.Registers.Y += 1;
-        cpu.Registers.P.Negative = (cpu.Registers.Y & 0b1000_0000) != 0;
+        cpu.Registers.P.Negative = (cpu.Registers.Y & 0x80) != 0;
         cpu.Registers.P.Zero = cpu.Registers.Y == 0;
     }
     
     public static void LSR(Core cpu)
     {
-        cpu.Registers.P.Carry = (cpu.Registers.A & 0b0000_0001) != 0;
+        cpu.Registers.P.Carry = (cpu.Registers.A & 0x01) != 0;
         cpu.Registers.A >>>= 1;
         cpu.Registers.P.Negative = false;
         cpu.Registers.P.Zero = cpu.Registers.A == 0;
@@ -77,20 +77,20 @@ static class Operations
     public static void ROL(Core cpu)
     {
         var carry = (byte)(cpu.Registers.P.Carry ? 1 : 0);
-        cpu.Registers.P.Carry = (cpu.Registers.A & 0b1000_0000) != 0;
+        cpu.Registers.P.Carry = (cpu.Registers.A & 0x80) != 0;
         cpu.Registers.A <<= 1;
         cpu.Registers.A |= carry;
-        cpu.Registers.P.Negative = (cpu.Registers.A & 0b1000_0000) != 0;
+        cpu.Registers.P.Negative = (cpu.Registers.A & 0x80) != 0;
         cpu.Registers.P.Zero = cpu.Registers.A == 0;
     }
     
     public static void ROR(Core cpu)
     {
-        var carry = (byte)(cpu.Registers.P.Carry ? 0b1000_0000 : 0);
-        cpu.Registers.P.Carry = (cpu.Registers.A & 0b0000_0001) != 0;
+        var carry = (byte)(cpu.Registers.P.Carry ? 0x80 : 0);
+        cpu.Registers.P.Carry = (cpu.Registers.A & 0x01) != 0;
         cpu.Registers.A >>>= 1;
         cpu.Registers.A |= carry;
-        cpu.Registers.P.Negative = (cpu.Registers.A & 0b1000_0000) != 0;
+        cpu.Registers.P.Negative = (cpu.Registers.A & 0x80) != 0;
         cpu.Registers.P.Zero = cpu.Registers.A == 0;
     }
     
@@ -112,28 +112,28 @@ static class Operations
     public static void TAX(Core cpu)
     {
         cpu.Registers.X = cpu.Registers.A;
-        cpu.Registers.P.Negative = (cpu.Registers.X & 0b1000_0000) != 0;
+        cpu.Registers.P.Negative = (cpu.Registers.X & 0x80) != 0;
         cpu.Registers.P.Zero = cpu.Registers.X == 0;
     }
     
     public static void TAY(Core cpu)
     {
         cpu.Registers.Y = cpu.Registers.A;
-        cpu.Registers.P.Negative = (cpu.Registers.Y & 0b1000_0000) != 0;
+        cpu.Registers.P.Negative = (cpu.Registers.Y & 0x80) != 0;
         cpu.Registers.P.Zero = cpu.Registers.Y == 0;
     }
     
     public static void TSX(Core cpu)
     {
         cpu.Registers.X = cpu.Registers.SP;
-        cpu.Registers.P.Negative = (cpu.Registers.X & 0b1000_0000) != 0;
+        cpu.Registers.P.Negative = (cpu.Registers.X & 0x80) != 0;
         cpu.Registers.P.Zero = cpu.Registers.X == 0;
     }
     
     public static void TXA(Core cpu)
     {
         cpu.Registers.A = cpu.Registers.X;
-        cpu.Registers.P.Negative = (cpu.Registers.A & 0b1000_0000) != 0;
+        cpu.Registers.P.Negative = (cpu.Registers.A & 0x80) != 0;
         cpu.Registers.P.Zero = cpu.Registers.A == 0;
     }
     
@@ -145,7 +145,7 @@ static class Operations
     public static void TYA(Core cpu)
     {
         cpu.Registers.A = cpu.Registers.Y;
-        cpu.Registers.P.Negative = (cpu.Registers.A & 0b1000_0000) != 0;
+        cpu.Registers.P.Negative = (cpu.Registers.A & 0x80) != 0;
         cpu.Registers.P.Zero = cpu.Registers.A == 0;
     }
 }
