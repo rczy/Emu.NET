@@ -14,9 +14,10 @@ static class Execution
             case 2:
                 cpu.Address.Low = cpu.Registers.SP--;
                 cpu.Address.High = 0x01;
+                op(cpu);
+                cpu.Bus.Write(cpu.Address, cpu.Data);
                 break;
         }
-        op(cpu);
         return true;
     }
 
@@ -35,9 +36,9 @@ static class Execution
             case 3:
                 cpu.Address.Low = ++cpu.Registers.SP;
                 cpu.Data = cpu.Bus.Read(cpu.Address);
+                op(cpu);
                 break;
         }
-        op(cpu);
         return true;
     }
 
@@ -59,9 +60,9 @@ static class Execution
                 return false;
             case 5:
                 cpu.Address.High = cpu.Bus.Read(cpu.Registers.PC);
+                op(cpu);
                 break;
         }
-        op(cpu);
         return true;
     }
 
@@ -86,9 +87,9 @@ static class Execution
                 return false;
             case 5:
                 cpu.Data = cpu.Bus.Read(cpu.Registers.PC); // dummy read
+                op(cpu);
                 break;
         }
-        op(cpu);
         return true;
     }
 
@@ -101,9 +102,9 @@ static class Execution
                 return false;
             case 2:
                 cpu.Address.High = cpu.Bus.Read(cpu.Registers.PC);
+                op(cpu);
                 break;
         }
-        op(cpu);
         return true;
     }
 
@@ -122,9 +123,9 @@ static class Execution
                 return false;
             case 4:
                 cpu.Address.High = cpu.Bus.Read((ushort)(cpu.IndirectAddress + 1));
+                op(cpu);
                 break;
         }
-        op(cpu);
         return true;
     }
 
@@ -204,9 +205,9 @@ static class Execution
                 {
                     cpu.InterruptHandler.PendingNMI = false;
                 }
+                op(cpu);
                 break;
         }
-        op(cpu);
         return true;
 
         void AccessStackWith(byte data)
@@ -245,9 +246,9 @@ static class Execution
                 cpu.Registers.PC &= 0x00FF;
                 byte pch = cpu.Data = cpu.Bus.Read((ushort)(0x0100 | ++cpu.Registers.SP));
                 cpu.Registers.PC |= (ushort)(pch << 8);
+                op(cpu);
                 break;
         }
-        op(cpu);
         return true;
     }
 }

@@ -17,9 +17,10 @@ static class Execution
                 cpu.Bus.Write(cpu.Address, cpu.Data);
                 return false;
             case 4:
+                op(cpu);
+                cpu.Bus.Write(cpu.Address, cpu.Data);
                 break;
         }
-        op(cpu);
         return true;
     }
 
@@ -40,9 +41,10 @@ static class Execution
                 cpu.Bus.Write(cpu.Address, cpu.Data);
                 return false;
             case 5:
+                op(cpu);
+                cpu.Bus.Write(cpu.Address, cpu.Data);
                 break;
         }
-        op(cpu);
         return true;
     }
 
@@ -66,9 +68,10 @@ static class Execution
                 cpu.Bus.Write(cpu.Address, cpu.Data);
                 return false;
             case 5:
+                op(cpu);
+                cpu.Bus.Write(cpu.Address, cpu.Data);
                 break;
         }
-        op(cpu);
         return true;
     }
 
@@ -99,9 +102,10 @@ static class Execution
                 cpu.Bus.Write(cpu.Address, cpu.Data);
                 return false;
             case 6:
+                op(cpu);
+                cpu.Bus.Write(cpu.Address, cpu.Data);
                 break;
         }
-        op(cpu);
         return true;
     }
 }

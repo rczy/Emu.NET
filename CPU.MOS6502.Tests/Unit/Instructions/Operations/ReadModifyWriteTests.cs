@@ -18,8 +18,7 @@ public class ReadModifyWriteTests : Base
         system.CPU.Address.Full = Address;
         Machinery.Instructions.ReadModifyWrite.Operations.ASL(system.CPU);
         
-        Assert.Equal(Address, system.RAM.LastWriteAddress);
-        Assert.Equal(result, system.RAM.PeekAt(Address));
+        Assert.Equal(result, system.CPU.Data);
         CheckFlags(negative, zero, carry, interrupt: false, @decimal: false, overflow: false);
     }
 
@@ -36,8 +35,7 @@ public class ReadModifyWriteTests : Base
         system.CPU.Address.Full = Address;
         Machinery.Instructions.ReadModifyWrite.Operations.DEC(system.CPU);
         
-        Assert.Equal(Address, system.RAM.LastWriteAddress);
-        Assert.Equal(result, system.RAM.PeekAt(Address));
+        Assert.Equal(result, system.CPU.Data);
         CheckFlags(negative, zero, carry: false, interrupt: false, @decimal: false, overflow: false);
     }
     
@@ -54,8 +52,7 @@ public class ReadModifyWriteTests : Base
         system.CPU.Address.Full = Address;
         Machinery.Instructions.ReadModifyWrite.Operations.INC(system.CPU);
         
-        Assert.Equal(Address, system.RAM.LastWriteAddress);
-        Assert.Equal(result, system.RAM.PeekAt(Address));
+        Assert.Equal(result, system.CPU.Data);
         CheckFlags(negative, zero, carry: false, interrupt: false, @decimal: false, overflow: false);
     }
     
@@ -73,8 +70,7 @@ public class ReadModifyWriteTests : Base
         system.CPU.Address.Full = Address;
         Machinery.Instructions.ReadModifyWrite.Operations.LSR(system.CPU);
         
-        Assert.Equal(Address, system.RAM.LastWriteAddress);
-        Assert.Equal(result, system.RAM.PeekAt(Address));
+        Assert.Equal(result, system.CPU.Data);
         CheckFlags(negative: false, zero, carry, interrupt: false, @decimal: false, overflow: false);
     }
     
@@ -92,8 +88,7 @@ public class ReadModifyWriteTests : Base
         system.CPU.Address.Full = Address;
         Machinery.Instructions.ReadModifyWrite.Operations.ROL(system.CPU);
         
-        Assert.Equal(Address, system.RAM.LastWriteAddress);
-        Assert.Equal(result, system.RAM.PeekAt(Address));
+        Assert.Equal(result, system.CPU.Data);
         CheckFlags(negative, zero, carry, interrupt: false, @decimal: false, overflow: false);
     }
     
@@ -111,8 +106,7 @@ public class ReadModifyWriteTests : Base
         system.CPU.Address.Full = Address;
         Machinery.Instructions.ReadModifyWrite.Operations.ROR(system.CPU);
         
-        Assert.Equal(Address, system.RAM.LastWriteAddress);
-        Assert.Equal(result, system.RAM.PeekAt(Address));
+        Assert.Equal(result, system.CPU.Data);
         CheckFlags(negative, zero, carry, interrupt: false, @decimal: false, overflow: false);
     }
 }

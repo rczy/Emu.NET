@@ -19,9 +19,9 @@ static class Execution
             case 2:
                 cpu.Address.High = 0x00;
                 cpu.Data = cpu.Bus.Read(cpu.Address);
+                op(cpu);
                 break;
         }
-        op(cpu);
         return true;
     }
 
@@ -37,9 +37,9 @@ static class Execution
                 return false;
             case 3:
                 cpu.Data = cpu.Bus.Read(cpu.Address);
+                op(cpu);
                 break;
         }
-        op(cpu);
         return true;
     }
 
@@ -62,9 +62,9 @@ static class Execution
                 return false;
             case 5:
                 cpu.Data = cpu.Bus.Read(cpu.Address);
+                op(cpu);
                 break;
         }
-        op(cpu);
         return true;
     }
 
@@ -122,9 +122,9 @@ static class Execution
                 cpu.BaseAddress.Low += register;
                 cpu.Address.Full = cpu.BaseAddress.Full;
                 cpu.Data = cpu.Bus.Read(cpu.Address);
+                op(cpu);
                 break;
         }
-        op(cpu);
         return true;
     }
 

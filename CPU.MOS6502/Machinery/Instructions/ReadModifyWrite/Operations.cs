@@ -8,7 +8,6 @@ static class Operations
         cpu.Data <<= 1;
         cpu.Registers.P.Negative = (cpu.Data & 0x80) != 0;
         cpu.Registers.P.Zero = cpu.Data == 0;
-        cpu.Bus.Write(cpu.Address, cpu.Data);
     }
     
     public static void DEC(Core cpu)
@@ -16,7 +15,6 @@ static class Operations
         cpu.Data -= 1;
         cpu.Registers.P.Negative = (cpu.Data & 0x80) != 0;
         cpu.Registers.P.Zero = cpu.Data == 0;
-        cpu.Bus.Write(cpu.Address, cpu.Data);
     }
     
     public static void INC(Core cpu)
@@ -24,7 +22,6 @@ static class Operations
         cpu.Data += 1;
         cpu.Registers.P.Negative = (cpu.Data & 0x80) != 0;
         cpu.Registers.P.Zero = cpu.Data == 0;
-        cpu.Bus.Write(cpu.Address, cpu.Data);
     }
     
     public static void LSR(Core cpu)
@@ -33,7 +30,6 @@ static class Operations
         cpu.Data >>>= 1;
         cpu.Registers.P.Negative = false;
         cpu.Registers.P.Zero = cpu.Data == 0;
-        cpu.Bus.Write(cpu.Address, cpu.Data);
     }
     
     public static void ROL(Core cpu)
@@ -44,7 +40,6 @@ static class Operations
         cpu.Data |= carry;
         cpu.Registers.P.Negative = (cpu.Data & 0x80) != 0;
         cpu.Registers.P.Zero = cpu.Data == 0;
-        cpu.Bus.Write(cpu.Address, cpu.Data);
     }
     
     public static void ROR(Core cpu)
@@ -55,6 +50,5 @@ static class Operations
         cpu.Data |= carry;
         cpu.Registers.P.Negative = (cpu.Data & 0x80) != 0;
         cpu.Registers.P.Zero = cpu.Data == 0;
-        cpu.Bus.Write(cpu.Address, cpu.Data);
     }
 }

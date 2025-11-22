@@ -40,7 +40,7 @@ public class Base
 
         void Write(Core cpu)
         {
-            cpu.Bus.Write(cpu.Address, data);
+            cpu.Data = data;
             opCalled = true;
         }
     }

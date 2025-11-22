@@ -4,16 +4,16 @@ static class Operations
 {
     public static void STA(Core cpu)
     {
-        cpu.Bus.Write(cpu.Address, cpu.Registers.A);
+        cpu.Data = cpu.Registers.A;
     }
     
     public static void STX(Core cpu)
     {
-        cpu.Bus.Write(cpu.Address, cpu.Registers.X);
+        cpu.Data = cpu.Registers.X;
     }
     
     public static void STY(Core cpu)
     {
-        cpu.Bus.Write(cpu.Address, cpu.Registers.Y);
+        cpu.Data = cpu.Registers.Y;
     }
 }

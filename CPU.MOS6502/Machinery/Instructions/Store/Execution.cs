@@ -11,9 +11,10 @@ static class Execution
                 return false;
             case 2:
                 cpu.Address.High = 0x00;
+                op(cpu);
+                cpu.Bus.Write(cpu.Address, cpu.Data);
                 break;
         }
-        op(cpu);
         return true;
     }
 
@@ -28,9 +29,10 @@ static class Execution
                 cpu.Address.High = cpu.Bus.Read(cpu.Registers.PC++);
                 return false;
             case 3:
+                op(cpu);
+                cpu.Bus.Write(cpu.Address, cpu.Data);
                 break;
         }
-        op(cpu);
         return true;
     }
 
@@ -52,9 +54,10 @@ static class Execution
                 cpu.Address.High = cpu.Bus.Read((byte)(cpu.BaseAddress + cpu.Registers.X + 1));
                 return false;
             case 5:
+                op(cpu);
+                cpu.Bus.Write(cpu.Address, cpu.Data);
                 break;
         }
-        op(cpu);
         return true;
     }
 
@@ -79,9 +82,10 @@ static class Execution
                 }
                 return false;
             case 4:
+                op(cpu);
+                cpu.Bus.Write(cpu.Address, cpu.Data);
                 break;
         }
-        op(cpu);
         return true;
     }
 
@@ -109,9 +113,10 @@ static class Execution
             case 3:
                 cpu.BaseAddress.Low += register;
                 cpu.Address.Full = cpu.BaseAddress.Full;
+                op(cpu);
+                cpu.Bus.Write(cpu.Address, cpu.Data);
                 break;
         }
-        op(cpu);
         return true;
     }
 
@@ -151,9 +156,10 @@ static class Execution
                 }
                 return false;
             case 5:
+                op(cpu);
+                cpu.Bus.Write(cpu.Address, cpu.Data);
                 break;
         }
-        op(cpu);
         return true;
     }
 }
