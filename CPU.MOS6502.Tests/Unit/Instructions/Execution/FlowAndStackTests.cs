@@ -432,7 +432,7 @@ public class FlowAndStackTests
             ial = 0x02;
             adh = 0x02;
             adl = 0xCD;
-            AddInstruction(opCode, Operations.JMP, ExecSteps.JumpImplied);
+            AddInstruction(opCode, Operations.JMP, ExecSteps.JumpIndirect);
 
             program = new byte[0x300];
             program[0] = opCode;

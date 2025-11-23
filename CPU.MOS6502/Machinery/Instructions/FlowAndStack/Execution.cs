@@ -108,7 +108,7 @@ static class Execution
         return true;
     }
 
-    public static bool JumpImplied(Core cpu, Operation op) // 5 cycles
+    public static bool JumpIndirect(Core cpu, Operation op) // 5 cycles
     {
         switch (cpu.Cycles)
         {
