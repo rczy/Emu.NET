@@ -2,7 +2,7 @@ namespace CPU.MOS6502.Tests.Utils;
 
 public class SimpleDevice(int storageSize) : Device
 {
-    protected readonly byte[] _storage = new byte[storageSize];
+    private readonly byte[] _storage = new byte[storageSize];
     public byte ReadCount { get; private set; }
     public byte WriteCount { get; private set; }
     public ushort LastReadAddress { get; private set; }
@@ -37,6 +37,11 @@ public class SimpleDevice(int storageSize) : Device
     public void LoadData(byte[] data)
     {
         Array.Copy(data, _storage, data.Length);
+    }
+    
+    public void LoadData(byte[] data, int startAddress)
+    {
+        Array.Copy(data, 0, _storage, startAddress, data.Length);
     }
 
     public byte PeekAt(ushort address)
