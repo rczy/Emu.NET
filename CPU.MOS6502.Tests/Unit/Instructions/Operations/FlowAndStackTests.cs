@@ -162,7 +162,7 @@ public class FlowAndStackTests : Base
         Machinery.Instructions.FlowAndStack.Operations.PLA(system.CPU);
         
         Assert.Equal(data, system.CPU.Registers.A);
-        CheckFlags(negative: false, zero: false, carry: false, interrupt: false, @decimal: false, overflow: false);
+        CheckFlags(negative: true, zero: false, carry: false, interrupt: false, @decimal: false, overflow: false);
     }
     
     [Fact]

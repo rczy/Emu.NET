@@ -71,6 +71,8 @@ static class Operations
     public static void PLA(Core cpu)
     {
         cpu.Registers.A = cpu.Data;
+        cpu.Registers.P.Negative = (cpu.Registers.A & 0x80) != 0;
+        cpu.Registers.P.Zero = cpu.Registers.A == 0;
     }
     
     public static void PLP(Core cpu)

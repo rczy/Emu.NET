@@ -59,12 +59,21 @@ public class InterruptSequenceTests : Base
         protected abstract ushort VectorHigh { get; }
         protected abstract InterruptHandler.Interrupts Sequence { get; }
 
-        protected ushort Pc => (ushort)(Sequence == InterruptHandler.Interrupts.None ? 0x0102 : 0x0101);
+        private const ushort StartPc = 0x0100;
+
+        private ushort Pc
+        {
+            get
+            {
+                if (Sequence != InterruptHandler.Interrupts.None) return StartPc; // hardware interrupts holds PC increment
+                return (ushort)(system.CPU.Cycles == 1 ? StartPc + 1 : StartPc + 2); // BRK increments PC twice
+            }
+        }
         protected virtual bool RW => true; // true: read and write occurs, false: just read occurs
 
-        public SequenceTestBase()
+        protected SequenceTestBase()
         {
-            system.CPU.Registers.PC = 0x0101;
+            system.CPU.Registers.PC = StartPc;
             system.CPU.Registers.SP = 0xFF;
             opCode = 0xAB; // dummy opcode for BRK (same as 0x00)
             adh = 0xCD; // interrupt vector high
@@ -73,7 +82,7 @@ public class InterruptSequenceTests : Base
             AddInstruction(opCode, Operations.BRK, Execution.Break);
             
             program = new byte[0xFFFF + 1];
-            program[0x0101] = opCode;
+            program[StartPc] = opCode;
             program[0xCDEF] = opCode;
             program[0xFFFA] = adl;
             program[0xFFFB] = adh;
@@ -86,7 +95,7 @@ public class InterruptSequenceTests : Base
         
         protected abstract void TriggerInterrupt();
 
-        protected void ClearSignals()
+        private void ClearSignals()
         {
             system.CPU.Signals.RES = false;
             system.CPU.Signals.IRQ = false;
@@ -96,7 +105,7 @@ public class InterruptSequenceTests : Base
         [Fact]
         public void Before_IsCorrect()
         {
-            CheckSystem(readCount: 0, writeCount: 0, cycles: 0, pc: 0x0101);
+            CheckSystem(readCount: 0, writeCount: 0, cycles: 0, pc: StartPc);
 
             Assert.NotEqual(opCode, system.CPU.Decoder.OpCode);
             Assert.Equal(InterruptHandler.Interrupts.None, system.CPU.InterruptHandler.Sequence);
@@ -120,7 +129,8 @@ public class InterruptSequenceTests : Base
             Tick(2);
             CheckSystem(readCount: 2, writeCount: 0, cycles: 2, pc: Pc);
 
-            Assert.Equal(Pc, system.RAM.LastReadAddress);
+            var address = (Sequence == InterruptHandler.Interrupts.None) ? StartPc + 1 : StartPc;
+            Assert.Equal(address, system.RAM.LastReadAddress);
         }
         
         [Fact]

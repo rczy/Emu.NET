@@ -169,6 +169,7 @@ static class Execution
         {
             case 1:
                 cpu.Data = cpu.Bus.Read(cpu.Registers.PC); // dummy read
+                if (cpu.InterruptHandler.Sequence == Seq.None) cpu.Registers.PC++; // skip a byte on BRK
                 return false;
             case 2:
                 AccessStackWith((byte)(cpu.Registers.PC >>> 8));
