@@ -2,6 +2,7 @@ using CPU.MOS6502.Tests.Utils;
 
 namespace CPU.MOS6502.Tests.Integration;
 
+[Trait("Category", "Integration")]
 public class TestRunner
 {
     [Fact]

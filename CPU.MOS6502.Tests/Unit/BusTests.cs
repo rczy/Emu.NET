@@ -6,7 +6,7 @@ namespace CPU.MOS6502.Tests.Unit;
 
 Devices on the bus:
 - DEVICE A: 32K storage (in fact 48K, but DEVICE #2 address space overlap renders 16K unused)
-- DEVICE B: 16K storage (address offsetted with mask)
+- DEVICE B: 16K storage (address offset with mask)
 - DEVICE C: 8K storage (in fact 4K, but mirrored with mask)
 
 Memory map of the connected devices:
@@ -34,6 +34,7 @@ Memory map of the connected devices:
 +-----------------+ 
 
 */
+[Trait("Category", "Unit")]
 public class BusTests : IDisposable
 {
     static readonly Bus _bus = new();

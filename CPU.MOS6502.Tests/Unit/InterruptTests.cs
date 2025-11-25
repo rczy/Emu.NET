@@ -5,6 +5,7 @@ using Operations = Machinery.Instructions.FlowAndStack.Operations;
 using Execution = Machinery.Instructions.FlowAndStack.Execution;
 using Sequence = Machinery.InterruptHandler.Interrupts;
 
+[Trait("Category", "Unit")]
 public class InterruptTests
 {
     private readonly SimpleSystem _system = new();

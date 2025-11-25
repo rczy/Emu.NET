@@ -1,5 +1,6 @@
 namespace CPU.MOS6502.Tests.Unit.Instructions.Operations;
 
+[Trait("Category", "Unit")]
 public class SingleByteTests : Base
 {
     [Theory]

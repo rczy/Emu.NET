@@ -3,11 +3,12 @@ namespace CPU.MOS6502.Tests.Unit.Instructions.Execution;
 using CPU.MOS6502.Machinery.Instructions;
 using ExecSteps = Machinery.Instructions.Internal.Execution;
 
-public class InternalTests
+public abstract class InternalTests
 {
+    [Trait("Category", "Unit")]
     public class Immediate : Base
     {
-        public Immediate() : base()
+        public Immediate()
         {
             opCode = 0xAB;
             data = 0xCD;
@@ -53,9 +54,10 @@ public class InternalTests
         }
     }
 
+    [Trait("Category", "Unit")]
     public class ZeroPage : Base
     {
-        public ZeroPage() : base()
+        public ZeroPage()
         {
             opCode = 0xAB;
             adl = 0x04;
@@ -112,9 +114,10 @@ public class InternalTests
         }
     }
 
+    [Trait("Category", "Unit")]
     public class Absolute : Base
     {
-        public Absolute() : base()
+        public Absolute()
         {
             opCode = 0xAB;
             adl = 0x23;
@@ -188,9 +191,10 @@ public class InternalTests
         }
     }
 
+    [Trait("Category", "Unit")]
     public class IndirectX : Base
     {
-        public IndirectX() : base()
+        public IndirectX()
         {
             opCode = 0xAB;
             bal = 0xFF; // wrap around
@@ -201,7 +205,7 @@ public class InternalTests
 
             system.CPU.Registers.X = 4;
 
-            byte[] program = new byte[0x200];
+            program = new byte[0x200];
             program[0] = opCode;
             program[1] = bal;
             program[2] = 0x00;
@@ -291,13 +295,13 @@ public class InternalTests
         }
     }
 
-    abstract public class AbsoluteIndexed : Base
+    public abstract class AbsoluteIndexed : Base
     {
-        abstract protected byte IndexRegister { get; set; }
+        protected abstract byte IndexRegister { get; set; }
 
-        abstract protected Steps Steps { get; }
+        protected abstract Steps Steps { get; }
 
-        public AbsoluteIndexed() : base()
+        protected AbsoluteIndexed()
         {
             opCode = 0xAB;
             bal = 0x23;
@@ -313,7 +317,7 @@ public class InternalTests
             LoadData(program);
         }
 
-        protected void ArrangePageCrossing(bool shouldCross)
+        private void ArrangePageCrossing(bool shouldCross)
         {
             IndexRegister = (byte)(shouldCross ? 0xFF : 0x42);
             program[((bah << 8) | bal) + IndexRegister] = data;
@@ -412,6 +416,7 @@ public class InternalTests
         }
     }
 
+    [Trait("Category", "Unit")]
     public class AbsoluteX : AbsoluteIndexed
     {
         protected override byte IndexRegister
@@ -423,6 +428,7 @@ public class InternalTests
         protected override Steps Steps => ExecSteps.AbsoluteX;
     }
 
+    [Trait("Category", "Unit")]
     public class AbsoluteY : AbsoluteIndexed
     {
         protected override byte IndexRegister
@@ -434,13 +440,13 @@ public class InternalTests
         protected override Steps Steps => ExecSteps.AbsoluteY;
     }
 
-    abstract public class ZeroPageIndexed : Base
+    public abstract class ZeroPageIndexed : Base
     {
-        abstract protected byte IndexRegister { get; set; }
+        protected abstract byte IndexRegister { get; set; }
 
-        abstract protected Steps Steps { get; }
+        protected abstract Steps Steps { get; }
 
-        public ZeroPageIndexed() : base()
+        protected ZeroPageIndexed()
         {
             opCode = 0xAB;
             bal = 0x23;
@@ -454,7 +460,7 @@ public class InternalTests
             LoadData(program);
         }
 
-        protected void ArrangeWrapAround(bool shouldWrap)
+        private void ArrangeWrapAround(bool shouldWrap)
         {
             IndexRegister = (byte)(shouldWrap ? 0xFF : 0x42);
             program[(byte)(bal + IndexRegister)] = data;
@@ -521,6 +527,7 @@ public class InternalTests
         }
     }
 
+    [Trait("Category", "Unit")]
     public class ZeroPageX : ZeroPageIndexed
     {
         protected override byte IndexRegister
@@ -532,6 +539,7 @@ public class InternalTests
         protected override Steps Steps => ExecSteps.ZeroPageX;
     }
 
+    [Trait("Category", "Unit")]
     public class ZeroPageY : ZeroPageIndexed
     {
         protected override byte IndexRegister
@@ -543,9 +551,10 @@ public class InternalTests
         protected override Steps Steps => ExecSteps.ZeroPageY;
     }
 
+    [Trait("Category", "Unit")]
     public class IndirectY : Base
     {
-        public IndirectY() : base()
+        public IndirectY()
         {
             opCode = 0xAB;
             ial = 0x42;
@@ -563,7 +572,7 @@ public class InternalTests
             LoadData(program);
         }
 
-        protected void ArrangePageCrossing(bool shouldCross)
+        private void ArrangePageCrossing(bool shouldCross)
         {
             system.CPU.Registers.Y = (byte)(shouldCross ? 0xFF : 0x42);
             program[((bah << 8) | bal) + system.CPU.Registers.Y] = data;

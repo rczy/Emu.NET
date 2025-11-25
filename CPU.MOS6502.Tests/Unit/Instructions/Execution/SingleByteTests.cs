@@ -2,11 +2,12 @@ namespace CPU.MOS6502.Tests.Unit.Instructions.Execution;
 
 using ExecSteps = Machinery.Instructions.SingleByte.Execution;
 
-public class SingleByteTests
+public abstract class SingleByteTests
 {
+    [Trait("Category", "Unit")]
     public class Implied : Base
     {
-        public Implied() : base()
+        public Implied()
         {
             opCode = 0xAB;
             AddDummyInstruction(opCode, ExecSteps.Implied);

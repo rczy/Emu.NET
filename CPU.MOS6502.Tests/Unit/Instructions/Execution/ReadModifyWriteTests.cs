@@ -2,13 +2,14 @@ namespace CPU.MOS6502.Tests.Unit.Instructions.Execution;
 
 using ExecSteps = Machinery.Instructions.ReadModifyWrite.Execution;
 
-public class ReadModifyWriteTests
+public abstract class ReadModifyWriteTests
 {
+    [Trait("Category", "Unit")]
     public class ZeroPage : Base
     {
-        protected byte origData;
+        private readonly byte origData;
 
-        public ZeroPage() : base()
+        public ZeroPage()
         {
             opCode = 0xAB;
             adl = 0x04;
@@ -90,11 +91,12 @@ public class ReadModifyWriteTests
         }
     }
 
+    [Trait("Category", "Unit")]
     public class Absolute : Base
     {
-        protected byte origData;
+        private readonly byte origData;
 
-        public Absolute() : base()
+        public Absolute()
         {
             opCode = 0xAB;
             adl = 0x23;
@@ -193,17 +195,18 @@ public class ReadModifyWriteTests
         }
     }
 
+    [Trait("Category", "Unit")]
     public class ZeroPageX : Base
     {
-        protected byte origData;
+        private readonly byte origData;
 
-        protected byte IndexRegister
+        private byte IndexRegister
         {
             get => system.CPU.Registers.X;
             set => system.CPU.Registers.X = value;
         }
 
-        public ZeroPageX() : base()
+        public ZeroPageX()
         {
             opCode = 0xAB;
             bal = 0x23;
@@ -218,7 +221,7 @@ public class ReadModifyWriteTests
             LoadData(program);
         }
 
-        protected void ArrangeWrapAround(bool shouldWrap)
+        private void ArrangeWrapAround(bool shouldWrap)
         {
             IndexRegister = (byte)(shouldWrap ? 0xFF : 0x42);
             program[(byte)(bal + IndexRegister)] = origData;
@@ -315,17 +318,18 @@ public class ReadModifyWriteTests
         }
     }
 
+    [Trait("Category", "Unit")]
     public class AbsoluteX : Base
     {
-        protected byte origData;
+        private readonly byte origData;
 
-        protected byte IndexRegister
+        private byte IndexRegister
         {
             get => system.CPU.Registers.X;
             set => system.CPU.Registers.X = value;
         }
 
-        public AbsoluteX() : base()
+        public AbsoluteX()
         {
             opCode = 0xAB;
             bal = 0x23;
@@ -342,7 +346,7 @@ public class ReadModifyWriteTests
             LoadData(program);
         }
 
-        protected void ArrangePageCrossing(bool shouldCross)
+        private void ArrangePageCrossing(bool shouldCross)
         {
             IndexRegister = (byte)(shouldCross ? 0xFF : 0x42);
             program[((bah << 8) | bal) + IndexRegister] = origData;

@@ -3,8 +3,9 @@ namespace CPU.MOS6502.Tests.Unit.Instructions.Execution;
 using Machinery;
 using CPU.MOS6502.Machinery.Instructions.FlowAndStack;
 
-public class InterruptSequenceTests : Base
+public abstract class InterruptSequenceTests : Base
 {
+    [Trait("Category", "Unit")]
     public class Software : SequenceTestBase
     {
         protected override ushort VectorLow => 0xFFFE;
@@ -16,6 +17,7 @@ public class InterruptSequenceTests : Base
         }
     }
     
+    [Trait("Category", "Unit")]
     public class Reset : SequenceTestBase
     {
         protected override ushort VectorLow => 0xFFFC;
@@ -29,6 +31,7 @@ public class InterruptSequenceTests : Base
         }
     }
     
+    [Trait("Category", "Unit")]
     public class InterruptRequest : SequenceTestBase
     {
         protected override ushort VectorLow => 0xFFFE;
@@ -41,6 +44,7 @@ public class InterruptSequenceTests : Base
         }
     }
     
+    [Trait("Category", "Unit")]
     public class NonMaskableInterrupt : SequenceTestBase
     {
         protected override ushort VectorLow => 0xFFFA;

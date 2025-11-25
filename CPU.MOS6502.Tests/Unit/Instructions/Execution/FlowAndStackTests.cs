@@ -3,11 +3,12 @@ namespace CPU.MOS6502.Tests.Unit.Instructions.Execution;
 using Operations = Machinery.Instructions.FlowAndStack.Operations;
 using ExecSteps = Machinery.Instructions.FlowAndStack.Execution;
 
-public class FlowAndStackTests
+public abstract class FlowAndStackTests
 {
+    [Trait("Category", "Unit")]
     public class Push : Base
     {
-        public Push() : base()
+        public Push()
         {
             system.CPU.Registers.SP = 0xFF;
 
@@ -81,9 +82,10 @@ public class FlowAndStackTests
         }
     }
 
+    [Trait("Category", "Unit")]
     public class Pull : Base
     {
-        public Pull() : base()
+        public Pull()
         {
             system.CPU.Registers.SP = 0xFE;
 
@@ -173,9 +175,10 @@ public class FlowAndStackTests
         }
     }
 
+    [Trait("Category", "Unit")]
     public class JumpToSubroutine : Base
     {
-        public JumpToSubroutine() : base()
+        public JumpToSubroutine()
         {
             system.CPU.Registers.SP = 0xFF;
             system.CPU.Registers.PC = 0x0100;
@@ -269,9 +272,10 @@ public class FlowAndStackTests
         }
     }
 
+    [Trait("Category", "Unit")]
     public class ReturnFromSubroutine : Base
     {
-        public ReturnFromSubroutine() : base()
+        public ReturnFromSubroutine()
         {
             system.CPU.Registers.SP = 0xFD;
             system.CPU.Registers.PC = 0x02CD;
@@ -362,9 +366,10 @@ public class FlowAndStackTests
         }
     }
 
+    [Trait("Category", "Unit")]
     public class JumpAbsolute : Base
     {
-        public JumpAbsolute() : base()
+        public JumpAbsolute()
         {
             opCode = 0xAB;
             adh = 0x01;
@@ -423,9 +428,10 @@ public class FlowAndStackTests
         }
     }
 
+    [Trait("Category", "Unit")]
     public class JumpImplied : Base
     {
-        public JumpImplied() : base()
+        public JumpImplied()
         {
             opCode = 0xAB;
             iah = 0x01;
@@ -506,15 +512,16 @@ public class FlowAndStackTests
         }
     }
 
+    [Trait("Category", "Unit")]
     public class Branch : Base
     {
-        public Branch() : base()
+        public Branch()
         {
             opCode = 0xAB;
             program = new byte[0x400];
         }
 
-        protected void ArrangeBranching(ushort initialPc, byte offset, bool takeBranch)
+        private void ArrangeBranching(ushort initialPc, byte offset, bool takeBranch)
         {
             AddInstruction(opCode, cpu => cpu.Data = (byte)(takeBranch ? 1 : 0), ExecSteps.Branch);
             program[initialPc] = opCode;
@@ -578,9 +585,10 @@ public class FlowAndStackTests
         }
     }
     
+    [Trait("Category", "Unit")]
     public class ReturnFromInterrupt : Base
     {
-        public ReturnFromInterrupt() : base()
+        public ReturnFromInterrupt()
         {
             system.CPU.Registers.SP = 0xFC;
             system.CPU.Registers.PC = 0x02CD;
