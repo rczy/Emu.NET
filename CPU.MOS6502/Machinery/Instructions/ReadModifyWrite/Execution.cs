@@ -12,9 +12,11 @@ static class Execution
             case 2:
                 cpu.Address.High = 0x00;
                 cpu.Data = cpu.Bus.Read(cpu.Address);
+                cpu.Signals.RW = false;
                 return false;
             case 3:
                 cpu.Bus.Write(cpu.Address, cpu.Data);
+                cpu.Signals.RW = false;
                 return false;
             case 4:
                 op(cpu);
@@ -36,9 +38,11 @@ static class Execution
                 return false;
             case 3:
                 cpu.Data = cpu.Bus.Read(cpu.Address);
+                cpu.Signals.RW = false;
                 return false;
             case 4:
                 cpu.Bus.Write(cpu.Address, cpu.Data);
+                cpu.Signals.RW = false;
                 return false;
             case 5:
                 op(cpu);
@@ -63,9 +67,11 @@ static class Execution
                 cpu.BaseAddress.Low += cpu.Registers.X;
                 cpu.Address.Full = cpu.BaseAddress.Full;
                 cpu.Data = cpu.Bus.Read(cpu.Address);
+                cpu.Signals.RW = false;
                 return false;
             case 4:
                 cpu.Bus.Write(cpu.Address, cpu.Data);
+                cpu.Signals.RW = false;
                 return false;
             case 5:
                 op(cpu);
@@ -97,9 +103,11 @@ static class Execution
                 return false;
             case 4:
                 cpu.Data = cpu.Bus.Read(cpu.Address);
+                cpu.Signals.RW = false;
                 return false;
             case 5:
                 cpu.Bus.Write(cpu.Address, cpu.Data);
+                cpu.Signals.RW = false;
                 return false;
             case 6:
                 op(cpu);

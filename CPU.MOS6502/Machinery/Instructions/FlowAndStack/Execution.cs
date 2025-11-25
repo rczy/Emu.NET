@@ -10,6 +10,7 @@ static class Execution
         {
             case 1:
                 cpu.Data = cpu.Bus.Read(cpu.Registers.PC); // dummy read
+                cpu.Signals.RW = false;
                 return false;
             case 2:
                 cpu.Address.Low = cpu.Registers.SP--;
@@ -51,9 +52,11 @@ static class Execution
                 return false;
             case 2:
                 cpu.Data = cpu.Bus.Read((ushort)(0x0100 | cpu.Registers.SP)); // dummy read
+                cpu.Signals.RW = false;
                 return false;
             case 3:
                 cpu.Bus.Write((ushort)(0x0100 | cpu.Registers.SP--), (byte)(cpu.Registers.PC >>> 8));
+                cpu.Signals.RW = false;
                 return false;
             case 4:
                 cpu.Bus.Write((ushort)(0x0100 | cpu.Registers.SP--), (byte)cpu.Registers.PC);
@@ -170,12 +173,15 @@ static class Execution
             case 1:
                 cpu.Data = cpu.Bus.Read(cpu.Registers.PC); // dummy read
                 if (cpu.InterruptHandler.Sequence == Seq.None) cpu.Registers.PC++; // skip a byte on BRK
+                SetRW();
                 return false;
             case 2:
                 AccessStackWith((byte)(cpu.Registers.PC >>> 8));
+                SetRW();
                 return false;
             case 3:
                 AccessStackWith((byte)cpu.Registers.PC);
+                SetRW();
                 return false;
             case 4:
                 cpu.Registers.P.Break = cpu.InterruptHandler.Sequence == Seq.None;
@@ -224,6 +230,11 @@ static class Execution
             {
                 cpu.Bus.Read(sp);
             }
+        }
+
+        void SetRW()
+        {
+            cpu.Signals.RW = cpu.InterruptHandler.Sequence == Seq.RES;
         }
     }
 

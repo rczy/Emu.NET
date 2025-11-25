@@ -11,6 +11,7 @@ public class Core
 
     internal Bus Bus { get; }
     public int Cycles { get; private set; }
+    public bool Stalled => Signals is { RDY: false, RW: true };
 
     public byte Data { get; internal set; }
     public Address Address { get; } = new();
@@ -28,6 +29,9 @@ public class Core
 
     public void Tick()
     {
+        InterruptHandler.DetectNMI();
+        if (Stalled) return;
+
         Decoder.ExecuteSequence();
         Cycles = Signals.SYNC ? 0 : Cycles + 1;
     }

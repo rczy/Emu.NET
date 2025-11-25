@@ -25,8 +25,6 @@ public class Decoder
 
     internal void ExecuteSequence()
     {
-        Cpu.InterruptHandler.DetectNMI();
-
         if (Cpu.Signals.SYNC) // opcode fetch (T0)
         {
             if (Cpu.InterruptHandler.Poll())
@@ -42,6 +40,7 @@ public class Decoder
             return;
         }
 
+        Cpu.Signals.RW = true;
         Cpu.Signals.SYNC = CurrentInstruction.Steps(Cpu, CurrentInstruction.Op);
     }
 
