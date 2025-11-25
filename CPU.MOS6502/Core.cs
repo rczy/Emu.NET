@@ -1,6 +1,6 @@
 namespace CPU.MOS6502;
 
-using CPU.MOS6502.Machinery;
+using Machinery;
 
 public class Core
 {
@@ -30,5 +30,13 @@ public class Core
     {
         Decoder.ExecuteSequence();
         Cycles = Signals.SYNC ? 0 : Cycles + 1;
+    }
+
+    public void Step()
+    {
+        do
+        {
+            Tick();
+        } while (!Signals.SYNC);
     }
 }

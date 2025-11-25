@@ -39,9 +39,9 @@ public class BusTests : IDisposable
 {
     static readonly Bus _bus = new();
 
-    static readonly Device deviceA = new SimpleDevice(0xC000) { Name = "DEVICE A" };
-    static readonly Device deviceB = new SimpleDevice(0x4000) { Name = "DEVICE B" };
-    static readonly Device deviceC = new SimpleDevice(0x1000) { Name = "DEVICE C" };
+    private static readonly IDevice deviceA = new SimpleDevice(0xC000); // DEVICE A
+    private static readonly IDevice deviceB = new SimpleDevice(0x4000); // DEVICE B
+    private static readonly IDevice deviceC = new SimpleDevice(0x1000); // DEVICE C
 
     public BusTests()
     {

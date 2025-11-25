@@ -189,6 +189,7 @@ static class Execution
                     Seq.RES => 0xFFFC,
                     Seq.IRQ => 0xFFFE,
                     Seq.None => 0xFFFE,
+                    _ => throw new ArgumentOutOfRangeException()
                 };
                 cpu.Address.Low = cpu.Bus.Read(vectorLow);
                 return false;
@@ -199,6 +200,7 @@ static class Execution
                     Seq.RES => 0xFFFD,
                     Seq.IRQ => 0xFFFF,
                     Seq.None => 0xFFFF,
+                    _ => throw new ArgumentOutOfRangeException()
                 };
                 cpu.Address.High = cpu.Bus.Read(vectorHigh);
 

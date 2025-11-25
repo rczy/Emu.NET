@@ -2,27 +2,27 @@ namespace CPU.MOS6502;
 
 public class Bus
 {
-    byte _latchedData = 0x00;
+    private byte _latchedData;
 
-    readonly DeviceConnection[] _addressSpace = new DeviceConnection[0xFFFF + 1];
+    private readonly DeviceConnection[] _addressSpace = new DeviceConnection[0xFFFF + 1];
 
-    readonly struct DeviceConnection
+    private readonly struct DeviceConnection
     {
         public ushort Mask { get; init; }
-        public Device Device { get; init; }
-        public bool IsOpen { get => Device == null; }
+        public IDevice Device { get; init; }
+        public bool IsOpen => Device == null;
     }
 
     public record AddressRange(ushort Start, ushort End);
 
-    public void Connect(Device device, AddressRange range, ushort mask = 0xFFFF)
+    public void Connect(IDevice device, AddressRange range, ushort mask = 0xFFFF)
     {
         var connection = new DeviceConnection { Mask = mask, Device = device };
         for (int i = range.Start; i <= range.End; i++)
             _addressSpace[i] = connection;
     }
 
-    public void Connect(Device device, AddressRange[] ranges, ushort mask = 0xFFFF)
+    public void Connect(IDevice device, AddressRange[] ranges, ushort mask = 0xFFFF)
     {
         foreach (AddressRange range in ranges)
             Connect(device, range, mask);

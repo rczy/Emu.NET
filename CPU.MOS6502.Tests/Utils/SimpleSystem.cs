@@ -10,7 +10,7 @@ public class SimpleSystem
     {
         Bus = new Bus();
         CPU = new Core(Bus);
-        RAM = new SimpleDevice(0xFFFF + 1) { Name = "RAM" };
+        RAM = new SimpleDevice(0xFFFF + 1); // RAM
         Bus.Connect(RAM, new Bus.AddressRange(0x0000, 0xFFFF));
     }
 }
