@@ -4,10 +4,15 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <LangVersion>13</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\CPU.MOS6502\CPU.MOS6502.csproj" />
+        <ProjectReference Include="..\CPU.MOS6502\CPU.MOS6502.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <InternalsVisibleTo Include="Device.PIA.Tests" />
     </ItemGroup>
 
 </Project>
