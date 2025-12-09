@@ -43,4 +43,12 @@ public class Core
             Tick();
         } while (!Signals.SYNC);
     }
+    
+    public void Reset()
+    {
+        if (!Signals.SYNC) Step(); // finish current instruction
+        Signals.RES = true;
+        Step(); // do reset sequence
+        Signals.RES = false;
+    }
 }

@@ -1,3 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using Machine.Apple1;
 
-Console.WriteLine("Hello, World!");
+var machine = new Motherboard();
+machine.RunEmulationLoop();

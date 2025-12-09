@@ -12,4 +12,13 @@
       <ProjectReference Include="..\Device.PIA\Device.PIA.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Binaries\monitor.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Binaries\basic.bin">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

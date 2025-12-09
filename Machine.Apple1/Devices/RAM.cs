@@ -4,18 +4,20 @@ namespace Machine.Apple1.Devices;
 
 public class RAM : IDevice
 {
+    private readonly byte[] _storage = new byte[0x8000]; // 32K
+    
     public void Reset()
     {
-        throw new NotImplementedException();
+        Array.Clear(_storage, 0, _storage.Length);
     }
-
+    
     public byte Read(ushort address)
     {
-        throw new NotImplementedException();
+        return _storage[address];
     }
-
+    
     public void Write(ushort address, byte data)
     {
-        throw new NotImplementedException();
+        _storage[address] = data;
     }
 }

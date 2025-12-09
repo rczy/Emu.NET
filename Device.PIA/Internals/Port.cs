@@ -1,7 +1,5 @@
 namespace Device.PIA.Internals;
 
-public enum PortSection { A, B }
-
 public class Port
 {
     public InterruptControl InterruptControl { get; }

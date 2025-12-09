@@ -1,5 +1,3 @@
-using Device.PIA.Internals;
-
 namespace Device.PIA.Tests.Utils;
 
 [Trait("Category", "Unit")]
