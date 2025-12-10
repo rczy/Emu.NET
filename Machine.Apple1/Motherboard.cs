@@ -92,6 +92,11 @@ public class Motherboard
         }
     }
 
+    public void CleanUp()
+    {
+        _display.Restore();
+    }
+
     private void Reset()
     {
         _cpu.Reset();
