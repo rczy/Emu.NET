@@ -20,4 +20,9 @@ public class RAM : IDevice
     {
         _storage[address] = data;
     }
+    
+    public void LoadData(byte[] data, int startAddress)
+    {
+        Array.Copy(data, 0, _storage, startAddress, data.Length);
+    }
 }

@@ -68,6 +68,11 @@ public class Motherboard
         _pia.Connect(PortSection.A, _keyboard);
         _pia.Connect(PortSection.B, _display);
     }
+    
+    public void LoadProgram(string path, ushort startAddress)
+    {
+        _ram.LoadData(File.ReadAllBytes(path), startAddress);
+    }
 
     public void RunEmulationLoop()
     {
@@ -75,6 +80,7 @@ public class Motherboard
 
         for (;;)
         {
+            _display.HandleCursorBlinking();
             _keyboard.HandleKeypress(ref _state);
             
             if (_state == EmulationState.ResetRequested)
