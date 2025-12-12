@@ -23,6 +23,8 @@ public class RAM : IDevice
     
     public void LoadData(byte[] data, int startAddress)
     {
+        if (startAddress + data.Length > _storage.Length)
+            throw new ArgumentOutOfRangeException(nameof(data));
         Array.Copy(data, 0, _storage, startAddress, data.Length);
     }
 }

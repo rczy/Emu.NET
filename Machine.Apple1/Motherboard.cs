@@ -69,9 +69,22 @@ public class Motherboard
         _pia.Connect(PortSection.B, _display);
     }
     
-    public void LoadProgram(string path, ushort startAddress)
+    public bool LoadProgram(string path, ushort startAddress)
     {
-        _ram.LoadData(File.ReadAllBytes(path), startAddress);
+        try
+        {
+            _ram.LoadData(File.ReadAllBytes(path), startAddress);
+            return true;
+        }
+        catch (FileNotFoundException e)
+        {
+            Console.Error.WriteLine(e.Message);
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            Console.Error.WriteLine($"Address '{startAddress:X4}' for '{path}' is out of RAM range.");
+        }
+        return false;
     }
 
     public void RunEmulationLoop()

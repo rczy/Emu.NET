@@ -48,7 +48,7 @@ public class Keyboard : IPeripheral
             case ConsoleKey.F4:
                 status = EmulationState.Stopped;
                 break;
-            case ConsoleKey.F5:
+            case ConsoleKey.F2:
                 status = EmulationState.ResetRequested;
                 break;
             default:
