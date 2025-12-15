@@ -80,7 +80,7 @@ public class Motherboard
         {
             Console.Error.WriteLine(e.Message);
         }
-        catch (ArgumentOutOfRangeException e)
+        catch (ArgumentOutOfRangeException)
         {
             Console.Error.WriteLine($"Address '{startAddress:X4}' for '{path}' is out of RAM range.");
         }

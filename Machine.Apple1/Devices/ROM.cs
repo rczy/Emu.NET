@@ -2,7 +2,7 @@ using CPU.MOS6502;
 
 namespace Machine.Apple1.Devices;
 
-public class ROM: IDevice
+public class ROM : IDevice
 {
     private readonly byte[] _storage = new byte[0x2000]; // 8K
 

@@ -63,12 +63,11 @@ public class Display : IPeripheral
             return;
         }
         
-        if (_cursorTimer.ElapsedMilliseconds < 500)
+        if (_cursorTimer.ElapsedMilliseconds < 350)
         {
             return;
         }
         
-        _cursorTimer.Stop();
         _cursorTimer.Reset();
         ToggleCursor();
     }
