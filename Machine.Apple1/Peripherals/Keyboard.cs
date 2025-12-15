@@ -7,6 +7,8 @@ public class Keyboard : IPeripheral
 {
     private Port? _port;
     private ConsoleKeyInfo? _keyInfo;
+    private readonly System.Diagnostics.Stopwatch _throttleTimer = new();
+    private const int ThrottleMs = 100;
     
     public void Connect(Port port)
     {
@@ -38,6 +40,7 @@ public class Keyboard : IPeripheral
     
     public void HandleKeypress(ref EmulationState status)
     {
+        if (ThrottleInput()) return;
         if (!Console.KeyAvailable) return;
         
         while (Console.KeyAvailable)
@@ -61,5 +64,20 @@ public class Keyboard : IPeripheral
                 break;
             }
         }
+    }
+    
+    private bool ThrottleInput()
+    {
+        if (!_throttleTimer.IsRunning)
+        {
+            _throttleTimer.Start();
+            return true;
+        }
+        
+        if (_throttleTimer.ElapsedMilliseconds < ThrottleMs)
+            return true;
+        
+        _throttleTimer.Reset();
+        return false;
     }
 }
