@@ -79,6 +79,9 @@ cpu.Signals.IRQ = true; // trigger an interrupt on the next tick (before the nex
 cpu.Signals.RDY = true; // stall the core on the next tick (only if it's a read cycle)
 ```
 
+## Tests
+
+The [CPU.MOS6502.Tests](../CPU.MOS6502.Tests/README.md) project contains the test suite to validate this implementation.
 
 ## Useful Resources
 
