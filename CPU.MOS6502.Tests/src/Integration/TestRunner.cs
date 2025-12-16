@@ -8,7 +8,7 @@ public class TestRunner
     [Fact]
     public void FunctionalTest_Runs_Successfully()
     {
-        const string testBinary = @"Binaries\6502_functional_test.bin";
+        const string testBinary = @"binaries\6502_functional_test.bin";
         const ushort successPc = 0x3469;
 
         ushort lastPc = 0x0000;
@@ -31,7 +31,7 @@ public class TestRunner
     [Fact]
     public void InterruptTest_Runs_Successfully()
     {
-        const string testBinary = @"Binaries\6502_interrupt_test.bin";
+        const string testBinary = @"binaries\6502_interrupt_test.bin";
         const ushort successPc = 0x06F5;
         const ushort feedbackAddress = 0xBFFC;
         const byte irqBit = 0b01;
@@ -61,7 +61,7 @@ public class TestRunner
     [Fact]
     public void DecimalTest_Runs_Successfully()
     {
-        const string testBinary = @"Binaries\6502_decimal_test.bin";
+        const string testBinary = @"binaries\6502_decimal_test.bin";
         const ushort doneAddress = 0x024B;
         const ushort errorAddress = 0x000B;
 
