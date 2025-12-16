@@ -5,12 +5,14 @@ namespace Machine.Apple1.Peripherals;
 
 public class Display : IPeripheral
 {
+    private const string Title = "Emu.NET :: Apple I";
     private readonly ConsoleColor _originalColor;
     private readonly System.Diagnostics.Stopwatch _cursorTimer = new();
     private bool _isCursorVisible;
     
     public Display()
     {
+        Console.Title = Title;
         Console.CursorVisible = false;
         
         _originalColor = Console.ForegroundColor;
