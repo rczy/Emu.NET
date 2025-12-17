@@ -8,8 +8,8 @@ public class ROM : IDevice
 
     public ROM()
     {
-        LoadData(File.ReadAllBytes(@"Binaries\basic.bin"), 0); // Apple BASIC
-        LoadData(File.ReadAllBytes(@"Binaries\monitor.bin"), 0x1F00); // WOZ Monitor
+        LoadData(File.ReadAllBytes(@"binaries\basic.bin"), 0); // Apple BASIC
+        LoadData(File.ReadAllBytes(@"binaries\monitor.bin"), 0x1F00); // WOZ Monitor
     }
     
     public void Reset()

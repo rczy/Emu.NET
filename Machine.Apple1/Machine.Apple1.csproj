@@ -13,10 +13,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Binaries\monitor.bin">
+      <None Update="binaries\monitor.bin">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="Binaries\basic.bin">
+      <None Update="binaries\basic.bin">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>
