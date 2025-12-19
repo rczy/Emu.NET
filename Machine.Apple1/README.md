@@ -3,6 +3,7 @@
 This console-based project aims to emulate the [Apple I](https://en.wikipedia.org/wiki/Apple_I) 8-bit home computer.
 
 ![The emulator running an Apple BASIC game named Mini-Startrek](docs/mini-startrek.gif)
+
 *The emulator running an Apple BASIC game named [Mini-Startrek](https://apple1software.com/games/mini-startrek/).*
 
 ## Features
